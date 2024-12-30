@@ -1,9 +1,17 @@
 import { useState } from "react";
 import codeImg from "../images/code.png";
 import deleteImg from "../images/delete.png";
+import axios from "axios";
 
 const GridCard = () => {
   const [isDeleteModelShow, setIsDeleteModelShow] = useState(false);
+  const id = 1;
+  const handleDelete = () => {
+    axios.delete(`http://localhost:5000/api/delete/${id}`).then((res) => {
+      console.log(res);
+    }).catch((error) => error);
+  }
+
   return (
     <>
       <div className="gridCard bg-[#141414] w-[270px] p-[10px] h-[180px] cursor-pointer hover:bg-[#202020] rounded-lg shadow-lg shadow-black/50">
@@ -25,7 +33,7 @@ const GridCard = () => {
               <button
                 className="p-[10px] rounded-lg bg-[#FF4343] text-white cursor-pointer min-w-[49%]"
                 onClick={() => {
-                  console.log("Project Deleted");
+                  handleDelete();
                   setIsDeleteModelShow(false);
                 }}
               >

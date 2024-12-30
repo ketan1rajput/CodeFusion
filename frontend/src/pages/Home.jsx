@@ -1,11 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import ListCard from "../components/ListCard";
 import GridCard from "../components/GridCard";
+import axios from "axios";
 
 const Home = () => {
   const [isGridLayout, setIsGridLayout] = useState(true);
   const [isCreateModelShow, setIsCreateModelShow] = useState(false);
+
+  const Home = () => {
+    axios
+      .get("http://localhost:5000/api/all-codes", {})
+      .then((res) => {
+        console.log("this is all posts", res);
+      })
+      .catch((error) => {
+        console.log("this is error", error);
+      });
+  }
+
+  useEffect(() => {
+    Home()
+  }, [])
+  
+
   return (
     <div>
       <Navbar />
@@ -41,7 +59,6 @@ const Home = () => {
           </div>
         )}
       </div>
-
       {isCreateModelShow && (
         <div className="createModelCon fixed top-0 left-0 right-0 bottom-0 w-screen h-screen bg-[rgb(0,0,0,0.1)] flex items-center justify-center">
           <div className="createModel w-[25vw] h-[27vh] shadow-lg shadow-black/50 bg-[#141414] rounded-[10px] p-[20px]">

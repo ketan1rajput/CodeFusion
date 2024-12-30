@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import logo from "../images/logo.png";
 import image from "../images/authPageSide.png";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setUsername as setReduxUsername } from "../utils/UserSlice.js";
 
 const SignUp = () => {
+  const dispatch = useDispatch();
+  const usernamefromredux = useSelector((state) => state.user.username);
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -15,6 +20,32 @@ const SignUp = () => {
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
+  }
+
+  const handleLogin = () => {
+    axios.post("http://localhost:5000/api/login", {
+      username: username,
+      password: password,
+    }).then((res) => {
+      dispatch(setReduxUsername(username));
+      console.log(res.data);
+    }).catch((err) => {
+      console.log(err);
+    });
+  }
+
+  const handleSignUp = () => {
+    axios.post("http://localhost:5000/api/sign-up", {
+      name: name,
+      username: username,
+      email: email,
+      password: password
+    }).then((res) => {
+      dispatch(setReduxUsername(username));
+      console.log(res);
+    }).catch((error) => {
+      console.log(error);
+    })
   }
 
   return (
@@ -83,9 +114,9 @@ const SignUp = () => {
             </button>
 
             {isLogin ? (
-              <button className="btnBlue w-full mt-[20px]">Login</button>
+              <button className="btnBlue w-full mt-[20px]" onClick={() => handleLogin()}>Login</button>
             ) : (
-              <button className="btnBlue w-full mt-[20px]">Sign Up</button>
+              <button className="btnBlue w-full mt-[20px]" onClick={() => handleSignUp()}>Sign Up</button>
             )}
           </p>
         </div>

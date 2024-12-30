@@ -3,6 +3,9 @@ import EditorNavbar from "../components/EditorNavbar";
 import Editor from "@monaco-editor/react";
 import { MdLightMode } from "react-icons/md";
 import { AiOutlineExpandAlt } from "react-icons/ai";
+import { FaSave } from "react-icons/fa";
+import axios from "axios";
+import DialogBox from "../components/DialogBox";
 
 const Editior = () => {
   const [tab, setTab] = useState("html");
@@ -11,6 +14,7 @@ const Editior = () => {
   const [htmlCode, setHtmlCode] = useState("");
   const [cssCode, setCssCode] = useState("");
   const [jsCode, setJsCode] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const changeTheme = () => {
     document.body.classList.toggle("lightMode", isLightMode);
@@ -36,17 +40,43 @@ const Editior = () => {
   };
 
   const handleChange = (value, type) => {
-    // Update state and trigger the iframe refresh
     if (type === "html") setHtmlCode(value);
     if (type === "css") setCssCode(value);
     if (type === "js") setJsCode(value);
 
-    // Call run with updated content
     run(
       type === "html" ? value : htmlCode,
       type === "css" ? value : cssCode,
       type === "js" ? value : jsCode
     );
+  };
+
+  const handleDialogOpen = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+  };
+
+  const handleDialogConfirm = (title) => {
+    // Use the title along with the code to send to the backend
+    axios
+      .post("http://localhost:5000/api/save", {
+        title: title, // Send the title from the input field
+        htmlCode: htmlCode,
+        cssCode: cssCode,
+        javaScriptCode: jsCode,
+      })
+      .then((res) => {
+        if (res.data) {
+          console.log(res.data.message);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsDialogOpen(false);
   };
 
   return (
@@ -69,6 +99,17 @@ const Editior = () => {
               ))}
             </div>
             <div className="flex items-center gap-2">
+              <div className="cursor-pointer" onClick={handleDialogOpen}>
+                <FaSave />
+              </div>
+              {isDialogOpen && (
+                <DialogBox
+                  text="Save"
+                  codetitle={htmlCode} // Optionally pass the title as a prop if needed
+                  onClose={handleDialogClose}
+                  onConfirm={handleDialogConfirm}
+                />
+              )}
               <i className="text-[20px] cursor-pointer" onClick={changeTheme}>
                 <MdLightMode />
               </i>
