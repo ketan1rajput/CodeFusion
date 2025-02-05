@@ -1,12 +1,20 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import logo from "../images/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Avatar from 'react-avatar';
-import { removeClass, toggleClass } from "../helper";
+import { toggleClass } from "../helper";
 import { MdLightMode } from "react-icons/md";
 import { BsGridFill } from "react-icons/bs";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    axios.post("http://localhost:5000/api/logout")
+    .then(() => navigate("/signUp"))
+    .catch((err) => console.error("Logout Failed", err));
+  }
+
   return (
     <>
       <div className="navbar flex items-center justify-between px-[100px] h-[80px] bg-[#141414]">
@@ -45,6 +53,9 @@ const Navbar = () => {
               <BsGridFill className="text-[20px]" />
               Grid Layout
             </i>
+            <div id="logout" onClick={handleLogout} className="cursor-pointer">
+              {`<-`} &nbsp; Logout
+            </div>
           </div>
         </div>
       </div>

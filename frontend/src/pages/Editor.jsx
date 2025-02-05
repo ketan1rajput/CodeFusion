@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import EditorNavbar from "../components/EditorNavbar";
 import Editor from "@monaco-editor/react";
 import { MdLightMode } from "react-icons/md";
 import { AiOutlineExpandAlt } from "react-icons/ai";
 import { FaSave } from "react-icons/fa";
 import axios from "axios";
+import BackButton from "../components/BackButton";
 import DialogBox from "../components/DialogBox";
+import { useSelector } from "react-redux";
 
 const Editior = () => {
   const [tab, setTab] = useState("html");
@@ -16,10 +18,23 @@ const Editior = () => {
   const [jsCode, setJsCode] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const savedHtmlCode = useSelector((state) => state.code.html);
+  const savedCssCode = useSelector((state) => state.code.css); 
+  const savedJsCode = useSelector((state) => state.code.javascript);
+
+
   const changeTheme = () => {
     document.body.classList.toggle("lightMode", isLightMode);
     setIsLightMode(!isLightMode);
   };
+
+  useEffect(() => {
+    if (savedHtmlCode || savedCssCode || savedJsCode) {
+      setHtmlCode(savedHtmlCode || "");
+      setCssCode(savedCssCode || "");
+      setJsCode(savedJsCode || "");
+    }
+  }, [savedHtmlCode, savedCssCode, savedJsCode]);
 
   const run = (html, css, js) => {
     const iframe = document.getElementById("iframe");
@@ -38,6 +53,11 @@ const Editior = () => {
       </html>
     `;
   };
+
+  // as soon as the html, css, and js codes are updated, run the code
+  useEffect(() => {
+    run(htmlCode, cssCode, jsCode);
+  }, [htmlCode, cssCode, jsCode]);
 
   const handleChange = (value, type) => {
     if (type === "html") setHtmlCode(value);
@@ -99,12 +119,13 @@ const Editior = () => {
               ))}
             </div>
             <div className="flex items-center gap-2">
+              <BackButton />
               <div className="cursor-pointer" onClick={handleDialogOpen}>
                 <FaSave />
               </div>
               {isDialogOpen && (
                 <DialogBox
-                  text="Save"
+                  text="save "
                   codetitle={htmlCode} // Optionally pass the title as a prop if needed
                   onClose={handleDialogClose}
                   onConfirm={handleDialogConfirm}

@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import logo from "../images/logo.png";
 import image from "../images/authPageSide.png";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setUsername as setReduxUsername } from "../utils/UserSlice.js";
 
 const SignUp = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const usernamefromredux = useSelector((state) => state.user.username);
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
@@ -28,9 +30,17 @@ const SignUp = () => {
       password: password,
     }).then((res) => {
       dispatch(setReduxUsername(username));
+      navigate(`/`);
+      alert("login successful")
       console.log(res.data);
     }).catch((err) => {
-      console.log(err);
+      if (err.response) {
+        console.log("Error response", err.response.data);
+        alert(err.response.data.message);
+      } else {
+        console.error("Login error", err);
+        alert("An error occurred while logging in");
+      }
     });
   }
 

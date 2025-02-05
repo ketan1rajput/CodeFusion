@@ -4,6 +4,7 @@ const User = require("../../models/User");
 async function saveCode(code) {
     const { title, htmlCode, cssCode, javaScriptCode, codeName } = code;
 
+    // the code id must be equal to user id
     const userID = await User.findOne({
         attributes: ["id"],
         where: {
@@ -23,14 +24,35 @@ async function saveCode(code) {
 }
 
 async function showAllCode() {
-  const allCodeFiles = await User.findOne({
+    const userData = await User.findOne({
+      where: {
+        isLoggedIn: true,
+      },
+    });
+  const userName = userData.dataValues.username;
+  const codeId = userData.dataValues.id;
+  const allCodeFiles = await Code.findOne({
     where: {
-      isLoggedIn: true,
+      code_id: codeId,
     },
   });
 
-  const { html_code, css_code, js_code } = allCodeFiles;
-  return { html_code, css_code, js_code };
+  let codeData = allCodeFiles.dataValues;
+  codeData = { ...codeData, "username": userName  };
+  return codeData;
 }
 
-module.exports = { saveCode, showAllCode }
+async function fetchCode(id) {
+  const codeData = await Code.findOne({
+    where: {
+      code_id: id,
+    },
+  });
+  let html_code = codeData.dataValues.html_code;
+  let css_code = codeData.dataValues.css_code;
+  let js_code = codeData.dataValues.js_code;
+  let code_id = codeData.dataValues.code_id;
+
+  return {html_code, css_code, js_code, code_id};
+}
+module.exports = { saveCode, showAllCode, fetchCode }
