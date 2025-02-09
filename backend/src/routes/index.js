@@ -28,8 +28,9 @@ router.post("/sign-up", (req, res) => {
 })
 
 //route to show all saved codes
-router.get("/all-codes", async (req, res) => {
-    const showAllDetails = await showAllCode();
+router.post("/all-codes/:id", async (req, res) => {
+    const { username, userId } = req.body;
+    const showAllDetails = await showAllCode(username, userId);
     if (showAllDetails) {
         res.status(200).send({
           data: showAllDetails,
@@ -44,9 +45,10 @@ router.get("/all-codes", async (req, res) => {
 })
 
 //route to save a code
-router.post("/save", (req, res) => {
-    let code = req.body;
-    let saveCodeData = saveCode(code)
+router.post("/save/:id", (req, res) => {
+    let codeDetails = req.body;
+    let userId = req?.params?.id;
+    let saveCodeData = saveCode(codeDetails, userId);
     if (saveCodeData) {
         res.status(200).send({
             success: true,

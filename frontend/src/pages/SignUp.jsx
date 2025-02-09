@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import logo from "../images/logo.png";
 import image from "../images/authPageSide.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setUsername as setReduxUsername } from "../utils/UserSlice.js";
+import {
+  setUsername as setReduxUsername,
+  setUserId,
+} from "../utils/UserSlice.js";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -29,7 +32,8 @@ const SignUp = () => {
       username: username,
       password: password,
     }).then((res) => {
-      dispatch(setReduxUsername(username));
+      dispatch(setReduxUsername(res.data.user.username));
+      dispatch(setUserId(res.data.user.id));
       navigate(`/`);
       alert("login successful")
       console.log(res.data);

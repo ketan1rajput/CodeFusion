@@ -18,6 +18,7 @@ const Editior = () => {
   const [jsCode, setJsCode] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const codeId = useSelector((state) => state.user.codeId);
   const savedHtmlCode = useSelector((state) => state.code.html);
   const savedCssCode = useSelector((state) => state.code.css); 
   const savedJsCode = useSelector((state) => state.code.javascript);
@@ -82,7 +83,7 @@ const Editior = () => {
   const handleDialogConfirm = (title) => {
     // Use the title along with the code to send to the backend
     axios
-      .post("http://localhost:5000/api/save", {
+      .post(`http://localhost:5000/api/save/${codeId}`, {
         title: title, // Send the title from the input field
         htmlCode: htmlCode,
         cssCode: cssCode,

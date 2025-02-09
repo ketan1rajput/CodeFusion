@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
 import logo from "../images/logo.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,12 +5,23 @@ import Avatar from 'react-avatar';
 import { toggleClass } from "../helper";
 import { MdLightMode } from "react-icons/md";
 import { BsGridFill } from "react-icons/bs";
+import { persistor } from "../utils/appStore";
+import { useDispatch } from "react-redux";
+import { setUserId } from "../utils/UserSlice";
 
 const Navbar = () => {
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleLogout = () => {
     axios.post("http://localhost:5000/api/logout")
-    .then(() => navigate("/signUp"))
+    .then(() => {
+      persistor.purge(); // Clears persisted state in localStorage
+      persistor.flush(); // Ensures pending writes are flushed
+      dispatch(setUserId(null)); // Reset user state in Redux
+      navigate("/signUp"); // Redirect to signUp page
+    })
     .catch((err) => console.error("Logout Failed", err));
   }
 

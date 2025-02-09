@@ -17,12 +17,22 @@ import { setHtml, setCss, setJavascript } from "../utils/CodeSlice.js";
 const Home = () => {
   const [isGridLayout, setIsGridLayout] = useState(true);
   const [codeData, setCodeData] = useState([]);
+  const userId = useSelector((state) => state.user.userId);
   const userName = useSelector((state) => state.user.username);
+  const codeId = useSelector((state) => state.user.codeId);
+  const codeTitle = useSelector((state) => state.user.codeTitle);
+  const codeCreatedDate = useSelector((state) => state.user.codeCreatedDate);
+  const codeUpdatedDate = useSelector((state) => state.user.codeUpdatedDate);
+
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const Home = () => {
     axios
-      .get("http://localhost:5000/api/all-codes", {})
+      .post(`http://localhost:5000/api/all-codes/${userId}`, {
+        username: userName,
+        userId: userId
+      })
       .then((res) => {
         dispatch(setUsername(res.data.data.username));
         dispatch(setCodeTitle(res.data.data.code_title));
@@ -37,7 +47,7 @@ const Home = () => {
 
   const fetchCode = () => {
     axios.post("http://localhost:5000/api/fetch-code", {
-      id: 3
+      id: codeId
     }).then((res) => {
       console.log("this is res", res.data.data)
       dispatch(setHtml(res.data.data.html_code));
@@ -51,7 +61,7 @@ const Home = () => {
   }
   
   const handleCreateClick = () => {
-    const projectID = '12345';
+    const projectID = codeId;
     navigate(`/editor/${projectID}`);
   }
 
