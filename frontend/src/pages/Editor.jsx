@@ -8,8 +8,10 @@ import axios from "axios";
 import BackButton from "../components/BackButton";
 import DialogBox from "../components/DialogBox";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 const Editior = () => {
+  let { codeId } = useParams(); 
   const [tab, setTab] = useState("html");
   const [isLightMode, setIsLightMode] = useState(true);
   const [isExpanded, setisExpanded] = useState(false);
@@ -18,10 +20,11 @@ const Editior = () => {
   const [jsCode, setJsCode] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const codeId = useSelector((state) => state.user.codeId);
   const savedHtmlCode = useSelector((state) => state.code.html);
   const savedCssCode = useSelector((state) => state.code.css); 
   const savedJsCode = useSelector((state) => state.code.javascript);
+  const username = useSelector((state) => state.user.username);
+  const userid = useSelector((state) => state.user.userId);
 
 
   const changeTheme = () => {
@@ -82,22 +85,46 @@ const Editior = () => {
 
   const handleDialogConfirm = (title) => {
     // Use the title along with the code to send to the backend
-    axios
-      .post(`http://localhost:5000/api/save/${codeId}`, {
-        title: title, // Send the title from the input field
-        htmlCode: htmlCode,
-        cssCode: cssCode,
-        javaScriptCode: jsCode,
-      })
-      .then((res) => {
-        if (res.data) {
-          console.log(res.data.message);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    setIsDialogOpen(false);
+
+    if (codeId === "new") {
+      axios
+        .post(`http://localhost:5000/api/save-new-code/`, {
+          username: username,
+          userId: userid, 
+          title: title, // Send the title from the input field
+          htmlCode: htmlCode,
+          cssCode: cssCode,
+          javaScriptCode: jsCode,
+        })
+        .then((res) => {
+          if (res.data) {
+            console.log(res.data.message);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      setIsDialogOpen(false);
+    } else {
+      axios
+        .post(`http://localhost:5000/api/save/${codeId}`, {
+          username: username,
+          userId: userid,
+          title: title, // Send the title from the input field
+          htmlCode: htmlCode,
+          cssCode: cssCode,
+          javaScriptCode: jsCode,
+        })
+        .then((res) => {
+          if (res.data) {
+            console.log(res.data.message);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      setIsDialogOpen(false);
+    }
   };
 
   return (

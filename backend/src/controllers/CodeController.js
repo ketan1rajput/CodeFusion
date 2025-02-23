@@ -1,8 +1,8 @@
-const { Code } = require("../../models/Code");
+const Code = require("../../models/Code");
 const User = require("../../models/User");
 
 async function saveCode(codeDetails, userId) {
-  const { title, htmlCode, cssCode, javaScriptCode, codeName } = codeDetails;
+  const { title, htmlCode, cssCode, javaScriptCode, codeName, username, userid } = codeDetails;
   let filterUserId;
   console.log(userId);
   if (userId) {
@@ -12,6 +12,8 @@ async function saveCode(codeDetails, userId) {
       attributes: ["id"],
       where: {
         isLoggedIn: true,
+        username: username,
+        id: userid,
       },
     });
     filterUserId = userId.dataValues.id;
@@ -20,6 +22,32 @@ async function saveCode(codeDetails, userId) {
     user_id: filterUserId,
     code_title: title,
     code_name: codeName,
+    html_code: htmlCode,
+    css_code: cssCode,
+    js_code: javaScriptCode,
+  });
+}
+
+async function saveNewCode(codeDetails) {
+  let { htmlCode, cssCode, javaScriptCode, title, username, userId } = codeDetails;
+  let filterUserId;
+  console.log(userId);
+  if (userId) {
+    filterUserId = userId;
+  } else {
+    userId = await User.findOne({
+      attributes: ["id"],
+      where: {
+        isLoggedIn: true,
+        username: username,
+        id: userId,
+      },
+    });
+    filterUserId = userId.dataValues.id;
+  }
+  await Code.create({
+    user_id: filterUserId,
+    code_title: title,
     html_code: htmlCode,
     css_code: cssCode,
     js_code: javaScriptCode,
@@ -42,7 +70,7 @@ async function showAllCode(username, userId) {
     },
   });
 
-  let codeData = allCodeFiles[0]?.dataValues;
+  let codeData = allCodeFiles.map((code) => code.dataValues);
   codeData = { ...codeData, "username": userName  };
   return codeData;
 }
@@ -61,4 +89,4 @@ async function fetchCode(id) {
   return {html_code, css_code, js_code, code_id};
 }
 
-module.exports = { saveCode, showAllCode, fetchCode }
+module.exports = { saveCode, showAllCode, fetchCode, saveNewCode }

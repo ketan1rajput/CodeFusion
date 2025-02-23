@@ -27,18 +27,23 @@ const Home = () => {
   
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const Home = () => {
+  const fetchUserCodes = () => {
     axios
       .post(`http://localhost:5000/api/all-codes/${userId}`, {
         username: userName,
         userId: userId
       })
       .then((res) => {
-        dispatch(setUsername(res.data.data.username));
-        dispatch(setCodeTitle(res.data.data.code_title));
-        dispatch(setCodeId(res.data.data.code_id));
-        dispatch(setCodeCreatedDate(res.data.data.createdAt));
-        dispatch(setCodeUpdatedDate(res.data.data.updatedAt))
+        console.log(res.data.data)
+        let responseData = res.data.data;
+        for (let item in responseData) {
+          setCodeData(responseData[item])
+          dispatch(setUsername(res.data?.data?.username));
+          dispatch(setCodeTitle(responseData[item]?.code_title));
+          dispatch(setCodeId(responseData[item]?.code_id));
+          dispatch(setCodeCreatedDate(responseData[item]?.createdAt));
+          dispatch(setCodeUpdatedDate(responseData[item]?.updatedAt))
+        }
       })
       .catch((error) => {
         console.log("this is error", error);
@@ -61,7 +66,7 @@ const Home = () => {
   }
   
   const handleCreateClick = () => {
-    const projectID = codeId;
+    const projectID = "new";
     navigate(`/editor/${projectID}`);
   }
 
@@ -87,7 +92,15 @@ const Home = () => {
       <div className="cards">
         {isGridLayout ? (
           <div className="grid px-[100px]" onClick={fetchCode}>
-            <GridCard />
+            {Object.entries(codeData)
+              .filter(([key, value]) => typeof value === "object") // ✅ Ensure only objects are used
+              .map(([key, item], index) => (
+                <GridCard
+                  key={item.code_id} // ✅ Use code_id as a unique key
+                  index={index}
+                  codeDetails={item} // ✅ Pass the object as a prop
+                />
+              ))}
           </div>
         ) : (
           <div className="list px-[100px]" onClick={fetchCode}>

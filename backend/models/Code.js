@@ -1,37 +1,40 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../src/db_connect/sequelize');
-const User = require('./User');
+const { DataTypes } = require("sequelize");
+const sequelize = require("../src/db_connect/sequelize");
 
-const Code = sequelize.define('Code', {
+const Code = sequelize.define(
+  "Code",
+  {
     code_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true, // ✅ Auto-generates unique IDs
     },
     code_title: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: User,  //Refers to the user table
-            key: 'id'       //Refers to the id column in the user table
-        }
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     html_code: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.TEXT, // ✅ Use TEXT to store long code
+      allowNull: false,
     },
     css_code: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
     js_code: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
-})
+  },
+  {
+    tableName: "Codes", // ✅ Explicit table name (optional)
+    timestamps: true, // ✅ Adds createdAt & updatedAt fields
+  }
+);
 
-module.exports = { Code };
+module.exports = Code;

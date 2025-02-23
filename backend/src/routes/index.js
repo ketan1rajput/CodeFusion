@@ -3,10 +3,9 @@ const app = express();
 const router = express.Router();
 const cors = require("cors");
 const pool = require("../db_connect/connection")
-const User = require("../../models/User")
 const loginMiddleware = require("../middlewares/loginMiddleware").loginMiddleware;
 const { signUp, login } = require("../controllers/LoginController")
-const { saveCode, showAllCode, fetchCode } = require("../controllers/CodeController");
+const { saveCode, showAllCode, fetchCode, saveNewCode } = require("../controllers/CodeController");
 app.use(express.json());
 app.use(cors());
 const PORT = process.env.PORT || 3000;
@@ -44,6 +43,21 @@ router.post("/all-codes/:id", async (req, res) => {
     }
 })
 
+router.post("/save-new-code/", (req, res) => {
+  let codeDetails = req.body;
+  let saveCodeData = saveNewCode(codeDetails);
+  if (saveCodeData) {
+    res.status(200).send({
+      success: true,
+      message: code
+    })
+  } else {
+    res.status(400).send({
+      success: false,
+      message: "Code not saved !"
+    })
+  }
+})
 //route to save a code
 router.post("/save/:id", (req, res) => {
     let codeDetails = req.body;
