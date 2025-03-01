@@ -8,6 +8,7 @@
 - **Frontend**:
   - HTML, CSS (Tailwind CSS)
   - JavaScript (React.js)
+  - Redux toolkit
   
 - **Backend**:
   - Node.js, Express.js
