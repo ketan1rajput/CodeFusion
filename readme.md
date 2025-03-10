@@ -101,9 +101,6 @@ We welcome contributions to CodeFusion! If you'd like to contribute, please fork
 
 If you encounter any bugs or have suggestions for improvements, please feel free to open an issue on the GitHub repository.
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👨‍💻 Authors
 
