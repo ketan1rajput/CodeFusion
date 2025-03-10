@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 const Editior = () => {
-  let { codeId } = useParams(); 
+  let { codeId } = useParams();
   const [tab, setTab] = useState("html");
   const [isLightMode, setIsLightMode] = useState(true);
   const [isExpanded, setisExpanded] = useState(false);
@@ -20,25 +20,33 @@ const Editior = () => {
   const [jsCode, setJsCode] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const savedHtmlCode = useSelector((state) => state.code.html);
-  const savedCssCode = useSelector((state) => state.code.css); 
-  const savedJsCode = useSelector((state) => state.code.javascript);
   const username = useSelector((state) => state.user.username);
   const userid = useSelector((state) => state.user.userId);
 
+  // getting the code for particular id
+
+  const getCodeForEdit = (codeId) => {
+    axios
+      .post(`http://localhost:5000/api/fetch-code/${codeId}`)
+      .then((res) => {
+        setHtmlCode(res.data.data.html_code);
+        setCssCode(res.data.data.css_code);
+        setJsCode(res.data.data.js_code);
+        console.log(res);
+      })
+      .catch((error) => error);
+  };
+
+  useEffect(() => {
+    if (!window.location.pathname.includes("/new")) {
+      getCodeForEdit(codeId);
+    }
+  }, [codeId]);
 
   const changeTheme = () => {
     document.body.classList.toggle("lightMode", isLightMode);
     setIsLightMode(!isLightMode);
   };
-
-  useEffect(() => {
-    if (savedHtmlCode || savedCssCode || savedJsCode) {
-      setHtmlCode(savedHtmlCode || "");
-      setCssCode(savedCssCode || "");
-      setJsCode(savedJsCode || "");
-    }
-  }, [savedHtmlCode, savedCssCode, savedJsCode]);
 
   const run = (html, css, js) => {
     const iframe = document.getElementById("iframe");
@@ -86,11 +94,11 @@ const Editior = () => {
   const handleDialogConfirm = (title) => {
     // Use the title along with the code to send to the backend
 
-    if (codeId === "new") {
+    if (codeId && codeId.toString() == "new") {
       axios
-        .post(`http://localhost:5000/api/save-new-code/`, {
+        .post(`http://localhost:5000/api/save-new-code`, {
           username: username,
-          userId: userid, 
+          userId: userid,
           title: title, // Send the title from the input field
           htmlCode: htmlCode,
           cssCode: cssCode,

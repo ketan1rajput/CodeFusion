@@ -5,39 +5,21 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const GridCard = ({index, codeDetails}) => {
-  console.log("this is index", index)
+const GridCard = ({ index, codeDetails }) => {
+  console.log("this is index", index);
   const [isDeleteModelShow, setIsDeleteModelShow] = useState(false);
   const [isFormattedDate, setIsFormattedDate] = useState("");
   const codeId = useSelector((state) => state.user.codeId);
   const navigate = useNavigate();
   const handleDelete = () => {
     axios
-      .delete(`http://localhost:5000/api/delete/${codeId}`)
+      .post(`http://localhost:5000/api/delete/${codeDetails.code_id}`)
       .then((res) => {
         console.log(res);
       })
       .catch((error) => error);
   };
 
-  // const codeTitle = useSelector((state) => state.user.codeTitle);
-  // const createdAt = useSelector((state) => state.user.codeCreatedDate);
-  // const updatedAt = useSelector((state) => state.user.codeUpdatedDate);
-
-  // useEffect(() => {
-  //   // Format the date when `createdAt` changes
-  //   const date = new Date(createdAt);
-  //   if (isNaN(date)) {
-  //     console.log("Invalid date");
-  //   } else {
-  //     const day = String(date.getDate()).padStart(2, "0");
-  //     const month = String(date.getMonth() + 1).padStart(2, "0");
-  //     const year = date.getFullYear();
-  //     const formattedDate = `${day}-${month}-${year}`;
-  //     setIsFormattedDate(formattedDate); // Only update the state once
-  //   }
-  // }, [createdAt]); // This will run only when `createdAt` changes
-  
   return (
     <>
       <div
@@ -53,7 +35,10 @@ const GridCard = ({index, codeDetails}) => {
             Created in {isFormattedDate}
           </p>
           <img
-            onClick={() => setIsDeleteModelShow(true)}
+            onClick={(e) => {
+              e.stopPropagation(); // Stop the click event from propagating to the parent div
+              setIsDeleteModelShow(true);
+            }}
             className="w-[30px] cursor-pointer"
             src={deleteImg}
             alt=""

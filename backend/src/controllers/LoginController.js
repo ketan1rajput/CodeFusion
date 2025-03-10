@@ -5,12 +5,12 @@ async function signUp(credentials) {
   const { username, name, email, password } = credentials;
 
   // Check if username already exists
-  const existingUser = await Login.findOne({ where: { username } });
+  const existingUser = await User.findOne({ where: { username } });
   if (existingUser) {
     throw new Error("Username already exists");
   }
 
-  await User.create({
+  let newUser =  await User.create({
     username,
     name,
     email,
