@@ -1,11 +1,14 @@
 const express = require("express");
 const app = express();
+const cookieParser = require("cookie-parser");
 const router = express.Router();
 const cors = require("cors");
-const pool = require("../db_connect/connection");
 const loginMiddleware =
   require("../middlewares/loginMiddleware").loginMiddleware;
+const authenticateToken =
+  require("../middlewares/authenticateToken").authenticateToken;
 const { signUp, login } = require("../controllers/LoginController");
+
 const {
   saveCode,
   showAllCode,
@@ -14,15 +17,31 @@ const {
   deleteCode,
 } = require("../controllers/CodeController");
 app.use(express.json());
-app.use(cors());
 const PORT = process.env.PORT || 3000;
+
+const corsOptions = {
+  origin: "http://localhost:5173", // Explicitly specify the allowed origin
+  credentials: true, // Allow credentials (cookies, authorization headers)
+};
+
+app.use(cookieParser());
+app.use(cors(corsOptions));
 
 app.use("/api", router);
 
 //login route
 router.post("/login", loginMiddleware, (req, res) => {
-  console.log("Login route triggered"); // Add this line
-  res.json({ success: true, message: "Login successful", user: req.user });
+  res.cookie("token", req.token, {
+    httpOnly: true,
+    secure: "false",
+    sameSite: "lax",
+  });
+  res.json({
+    success: true,
+    message: "Login successful",
+    user: req.user,
+    token: req.token,
+  });
 });
 
 //sign up route
@@ -33,7 +52,7 @@ router.post("/sign-up", (req, res) => {
 });
 
 //route to show all saved codes
-router.post("/all-codes/:id", async (req, res) => {
+router.post("/all-codes/:id", authenticateToken, async (req, res) => {
   const { username, userId } = req.body;
   const showAllDetails = await showAllCode(username, userId);
   if (showAllDetails) {
@@ -104,6 +123,11 @@ router.post("/delete/:id", async (req, res) => {
 
 //route for logout
 router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "strict",
+  });
   res.status(200).json({ message: "log out successfully" });
 });
 

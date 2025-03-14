@@ -1,4 +1,6 @@
 const User = require("../../models/User");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = process.env.SECRET_KEY;
 
 async function loginMiddleware(req, res, next) {
   try {
@@ -6,7 +8,7 @@ async function loginMiddleware(req, res, next) {
     if (!username || !password) {
       return res.status(400).json({
         success: false,
-        message: "username and password are required!"
+        message: "username and password are required!",
       });
     }
 
@@ -14,12 +16,23 @@ async function loginMiddleware(req, res, next) {
     if (!existingUser) {
       return res
         .status(404)
-        .json({ success: false, message: "No user found!" }); 
+        .json({ success: false, message: "No user found!" });
     }
+
+    const token = jwt.sign(
+      {
+        id: existingUser.id,
+        username: existingUser.username,
+      },
+      SECRET_KEY,
+      { expiresIn: "1h" }
+    );
 
     await User.update({ isLoggedIn: true }, { where: { username, password } });
 
     req.user = existingUser;
+    req.token = token;
+
     next(); // Call next() to pass control to the next middleware
   } catch (error) {
     console.error("Login error:", error.message);

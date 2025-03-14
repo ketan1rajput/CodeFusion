@@ -27,10 +27,14 @@ const Home = () => {
 
   const fetchUserCodes = () => {
     axios
-      .post(`http://localhost:5000/api/all-codes/${userId}`, {
-        username: userName,
-        userId: userId,
-      })
+      .post(
+        `http://localhost:5000/api/all-codes/${userId}`,
+        {
+          username: userName,
+          userId: userId,
+        },
+        { withCredentials: true } // ✅ Ensures cookies are sent with the request
+      )
       .then((res) => {
         console.log(res.data.data);
 

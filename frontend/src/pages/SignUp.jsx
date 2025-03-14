@@ -19,48 +19,58 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
 
-  const submitForm =  (e) => {
+  const submitForm = (e) => {
     e.preventDefault();
-  }
+  };
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
-  }
+  };
 
   const handleLogin = () => {
-    axios.post("http://localhost:5000/api/login", {
-      username: username,
-      password: password,
-    }).then((res) => {
-      dispatch(setReduxUsername(res.data.user.username));
-      dispatch(setUserId(res.data.user.id));
-      navigate(`/`);
-      alert("login successful")
-      console.log(res.data);
-    }).catch((err) => {
-      if (err.response) {
-        console.log("Error response", err.response.data);
-        alert(err.response.data.message);
-      } else {
-        console.error("Login error", err);
-        alert("An error occurred while logging in");
-      }
-    });
-  }
+    axios
+      .post(
+        "http://localhost:5000/api/login",
+        {
+          username: username,
+          password: password,
+        },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        dispatch(setReduxUsername(res.data.user.username));
+        dispatch(setUserId(res.data.user.id));
+        navigate(`/`);
+        alert("login successful");
+        console.log(res.data);
+      })
+      .catch((err) => {
+        if (err.response) {
+          console.log("Error response", err.response.data);
+          alert(err.response.data.message);
+        } else {
+          console.error("Login error", err);
+          alert("An error occurred while logging in");
+        }
+      });
+  };
 
   const handleSignUp = () => {
-    axios.post("http://localhost:5000/api/sign-up", {
-      name: name,
-      username: username,
-      email: email,
-      password: password
-    }).then((res) => {
-      dispatch(setReduxUsername(username));
-      console.log(res);
-    }).catch((error) => {
-      console.log(error);
-    })
-  }
+    axios
+      .post("http://localhost:5000/api/sign-up", {
+        name: name,
+        username: username,
+        email: email,
+        password: password,
+      })
+      .then((res) => {
+        dispatch(setReduxUsername(username));
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <>
@@ -128,9 +138,19 @@ const SignUp = () => {
             </button>
 
             {isLogin ? (
-              <button className="btnBlue w-full mt-[20px]" onClick={() => handleLogin()}>Login</button>
+              <button
+                className="btnBlue w-full mt-[20px]"
+                onClick={() => handleLogin()}
+              >
+                Login
+              </button>
             ) : (
-              <button className="btnBlue w-full mt-[20px]" onClick={() => handleSignUp()}>Sign Up</button>
+              <button
+                className="btnBlue w-full mt-[20px]"
+                onClick={() => handleSignUp()}
+              >
+                Sign Up
+              </button>
             )}
           </p>
         </div>

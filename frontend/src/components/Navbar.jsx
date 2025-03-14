@@ -15,7 +15,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    axios.post("http://localhost:5000/api/logout")
+    axios.post("http://localhost:5000/api/logout", {} , { withCredentials: true })
     .then(() => {
       persistor.purge(); // Clears persisted state in localStorage
       persistor.flush(); // Ensures pending writes are flushed
