@@ -1,9 +1,12 @@
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = process.env.SECRET_KEY || ''
+const SECRET_KEY = process.env.SECRET_KEY || "";
 
 function authenticateToken(req, res, next) {
-  console.log("hi");
-  const token = req.cookies.token;
+  let excludedRoutes = ["/login", "/logout", "/sign-up"];
+  if (excludedRoutes.includes(req.path)) {
+    return next();
+  }
+  const token = req.cookies?.token;
   if (!token)
     return res.status(401).json({ success: false, message: "Access denied" });
 

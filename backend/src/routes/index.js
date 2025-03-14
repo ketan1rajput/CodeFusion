@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 
 app.use("/api", router);
-
+app.use(authenticateToken);
 //login route
 router.post("/login", loginMiddleware, (req, res) => {
   res.cookie("token", req.token, {
@@ -52,7 +52,7 @@ router.post("/sign-up", (req, res) => {
 });
 
 //route to show all saved codes
-router.post("/all-codes/:id", authenticateToken, async (req, res) => {
+router.post("/all-codes/:id", async (req, res) => {
   const { username, userId } = req.body;
   const showAllDetails = await showAllCode(username, userId);
   if (showAllDetails) {
