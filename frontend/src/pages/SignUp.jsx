@@ -40,7 +40,7 @@ const SignUp = () => {
       .then((res) => {
         dispatch(setReduxUsername(res.data.user.username));
         dispatch(setUserId(res.data.user.id));
-        navigate(`/`);
+        navigate(`/home`);
         alert("login successful");
         console.log(res.data);
       })
@@ -66,6 +66,7 @@ const SignUp = () => {
       .then((res) => {
         dispatch(setReduxUsername(username));
         console.log(res);
+        navigate("/");
       })
       .catch((error) => {
         console.log(error);

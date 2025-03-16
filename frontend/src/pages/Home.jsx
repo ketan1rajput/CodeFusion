@@ -15,8 +15,9 @@ import {
 import { setHtml, setCss, setJavascript } from "../utils/CodeSlice.js";
 
 const Home = () => {
-  const [isGridLayout, setIsGridLayout] = useState(true);
-  const [codeData, setCodeData] = useState([]); // ✅ Fix: Ensure it's an array
+  const [isGridLayout, setIsGridLayout] = useState(false);
+  const [codeData, setCodeData] = useState([]);
+  const [codes, setCodes] = useState([]);
 
   const userId = useSelector((state) => state.user.userId);
   const userName = useSelector((state) => state.user.username);
@@ -63,6 +64,17 @@ const Home = () => {
       });
   };
 
+  const handleDelete = () => {
+    axios
+      .post(`http://localhost:5000/api/delete/${codeId}`)
+      .then((res) => {
+        setCodeData((prevCodes) =>
+          prevCodes.filter((code) => code.code_id !== codeId)
+        );
+      })
+      .catch((error) => error);
+  };
+
   const fetchCode = (codeId) => {
     navigate(`/editor/${codeId}`);
   };
@@ -77,7 +89,7 @@ const Home = () => {
 
   return (
     <div>
-      <Navbar />
+      <Navbar isGridLayout={isGridLayout} setIsGridLayout={setIsGridLayout} />
       <div className="flex items-center justify-between px-[100px] my-[40px]">
         <h2 className="text-2xl">Hi, {userName}👋</h2>
         <div className="flex items-center gap-1">
@@ -96,8 +108,8 @@ const Home = () => {
               <GridCard
                 key={item.code_id} // ✅ Use a unique key
                 index={index}
-                codeDetails={item} // ✅ Pass correct prop
-                onClick={() => fetchCode(item.code_id)} // ✅ Fix: Pass code ID
+                codeDetails={item}
+                handleDelete={handleDelete}
               />
             ))}
           </div>

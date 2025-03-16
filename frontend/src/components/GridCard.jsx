@@ -5,20 +5,11 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const GridCard = ({ index, codeDetails }) => {
-  console.log("this is index", index);
+const GridCard = ({ codeDetails, handleDelete }) => {
   const [isDeleteModelShow, setIsDeleteModelShow] = useState(false);
   const [isFormattedDate, setIsFormattedDate] = useState("");
   const codeId = useSelector((state) => state.user.codeId);
   const navigate = useNavigate();
-  const handleDelete = () => {
-    axios
-      .post(`http://localhost:5000/api/delete/${codeDetails.code_id}`)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((error) => error);
-  };
 
   return (
     <>
@@ -56,7 +47,7 @@ const GridCard = ({ index, codeDetails }) => {
               <button
                 className="p-[10px] rounded-lg bg-[#FF4343] text-white cursor-pointer min-w-[49%]"
                 onClick={() => {
-                  handleDelete();
+                  handleDelete(codeDetails.code_id);
                   setIsDeleteModelShow(false);
                 }}
               >
