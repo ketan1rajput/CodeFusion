@@ -1,6 +1,7 @@
 const User = require("../../models/User");
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY;
+const bcrypt = require("bcrypt");
 
 async function loginMiddleware(req, res, next) {
   try {
@@ -12,8 +13,9 @@ async function loginMiddleware(req, res, next) {
       });
     }
 
-    const existingUser = await User.findOne({ where: { username, password } });
-    if (!existingUser) {
+    const existingUser = await User.findOne({ where: { username } });
+    const isMatch = await bcrypt.compare(password, existingUser.password);
+    if (!isMatch || !existingUser) {
       return res
         .status(404)
         .json({ success: false, message: "No user found!" });

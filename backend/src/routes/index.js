@@ -16,6 +16,7 @@ const {
   saveNewCode,
   deleteCode,
 } = require("../controllers/CodeController");
+
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
@@ -29,6 +30,7 @@ app.use(cors(corsOptions));
 
 app.use("/api", router);
 app.use(authenticateToken);
+
 //login route
 router.post("/login", loginMiddleware, (req, res) => {
   res.cookie("token", req.token, {
