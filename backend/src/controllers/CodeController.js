@@ -66,7 +66,6 @@ async function saveNewCode(codeDetails) {
 async function showAllCode(username, userId) {
   const userData = await User.findOne({
     where: {
-      isLoggedIn: true,
       username: username,
       id: userId,
     },

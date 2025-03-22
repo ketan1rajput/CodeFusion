@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import NoPage from "./pages/NoPage";
 import SignUp from "./pages/SignUp";
 import Editior from "./pages/Editor";
+
 const App = () => {
   return (
     <>

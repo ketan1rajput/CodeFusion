@@ -1,8 +1,6 @@
 import logo from "../images/logo.png";
 import { FiDownload } from "react-icons/fi";
 
-
-
 const EditorNavbar = () => {
   return (
     <>
@@ -10,12 +8,12 @@ const EditorNavbar = () => {
         <div className="logo">
           <img className="w-[150px] cursor-pointer" src={logo} alt="" />
         </div>
-        <p>
+        {/* <p>
           File <span className="text-[gray]">My First Project</span>
           <i className="p-[8px] btn bg-black rounded-[5px] cursor-pointer text-[20px]">
             <FiDownload />
           </i>
-        </p>
+        </p> */}
       </div>
     </>
   );

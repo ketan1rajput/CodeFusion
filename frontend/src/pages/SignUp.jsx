@@ -8,6 +8,7 @@ import {
   setUsername as setReduxUsername,
   setUserId,
 } from "../utils/UserSlice.js";
+import PopupModal from "../components/PopupModal.jsx";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -41,7 +42,7 @@ const SignUp = () => {
         dispatch(setReduxUsername(res.data.user.username));
         dispatch(setUserId(res.data.user.id));
         navigate(`/home`);
-        alert("login successful");
+        <PopupModal text="Login Sucessful !" title="Success" />
         console.log(res.data);
       })
       .catch((err) => {
