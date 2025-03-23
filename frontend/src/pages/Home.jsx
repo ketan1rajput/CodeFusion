@@ -29,7 +29,7 @@ const Home = () => {
   const fetchUserCodes = () => {
     axios
       .post(
-        `http://localhost:5000/api/all-codes/${userId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/all-codes/${userId}`,
         {
           username: userName,
           userId: userId,
@@ -66,7 +66,7 @@ const Home = () => {
 
   const handleDelete = () => {
     axios
-      .post(`http://localhost:5000/api/delete/${codeId}`)
+      .post(`${import.meta.env.VITE_BACKEND_URL}/api/delete/${codeId}`)
       .then((res) => {
         setCodeData((prevCodes) =>
           prevCodes.filter((code) => code.code_id !== codeId)

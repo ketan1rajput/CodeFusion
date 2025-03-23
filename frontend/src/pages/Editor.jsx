@@ -27,7 +27,7 @@ const Editior = () => {
 
   const getCodeForEdit = (codeId) => {
     axios
-      .post(`http://localhost:5000/api/fetch-code/${codeId}`)
+      .post(`${import.meta.env.VITE_BACKEND_URL}/api/fetch-code/${codeId}`)
       .then((res) => {
         setHtmlCode(res.data.data.html_code);
         setCssCode(res.data.data.css_code);
@@ -96,7 +96,7 @@ const Editior = () => {
 
     if (codeId && codeId.toString() == "new") {
       axios
-        .post(`http://localhost:5000/api/save-new-code`, {
+        .post(`${import.meta.env.VITE_BACKEND_URL}/api/save-new-code`, {
           username: username,
           userId: userid,
           title: title, // Send the title from the input field
@@ -115,7 +115,7 @@ const Editior = () => {
       setIsDialogOpen(false);
     } else {
       axios
-        .post(`http://localhost:5000/api/save/${codeId}`, {
+        .post(`${import.meta.env.VITE_BACKEND_URL}/api/save/${codeId}`, {
           username: username,
           userId: userid,
           title: title, // Send the title from the input field

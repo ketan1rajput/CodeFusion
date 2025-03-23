@@ -31,7 +31,7 @@ const SignUp = () => {
   const handleLogin = () => {
     axios
       .post(
-        "http://localhost:5000/api/login",
+        `${import.meta.env.VITE_BACKEND_URL}/api/login`,
         {
           username: username,
           password: password,
@@ -42,7 +42,7 @@ const SignUp = () => {
         dispatch(setReduxUsername(res.data.user.username));
         dispatch(setUserId(res.data.user.id));
         navigate(`/home`);
-        <PopupModal text="Login Sucessful !" title="Success" />
+        <PopupModal text="Login Sucessful !" title="Success" />;
         console.log(res.data);
       })
       .catch((err) => {
@@ -58,7 +58,7 @@ const SignUp = () => {
 
   const handleSignUp = () => {
     axios
-      .post("http://localhost:5000/api/sign-up", {
+      .post(`${import.meta.env.VITE_BACKEND_URL}/api/sign-up`, {
         name: name,
         username: username,
         email: email,

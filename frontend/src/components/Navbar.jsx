@@ -15,7 +15,7 @@ const Navbar = ({ isGridLayout, setIsGridLayout }) => {
 
   const handleLogout = () => {
     axios
-      .post("http://localhost:5000/api/logout", {}, { withCredentials: true })
+      .post(`${import.meta.env.VITE_BACKEND_URL}/api/logout`, {}, { withCredentials: true })
       .then(() => {
         persistor.purge(); // Clears persisted state in localStorage
         persistor.flush(); // Ensures pending writes are flushed
