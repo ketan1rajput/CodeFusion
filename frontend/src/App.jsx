@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import NoPage from "./pages/NoPage";
 import SignUp from "./pages/SignUp";
 import Editior from "./pages/Editor";
+import About from "./components/About";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
           <Route path="/" element={<SignUp />} />
           <Route path="/home" element={<Home />} />
           <Route path="*" element={<NoPage />} />
+          <Route path="/about" element={<About />} />
           <Route path="/editor/:codeId" element={<Editior />} />
         </Routes>
       </BrowserRouter>

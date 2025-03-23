@@ -8,6 +8,7 @@ import { BsGridFill } from "react-icons/bs";
 import { persistor } from "../utils/appStore";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserId } from "../utils/UserSlice";
+import About from "./About";
 
 const Navbar = ({ isGridLayout, setIsGridLayout }) => {
   const dispatch = useDispatch();
@@ -40,7 +41,7 @@ const Navbar = ({ isGridLayout, setIsGridLayout }) => {
         </div>
         <div className="links flex items-center gap-2">
           <Link>Home</Link>
-          <Link>About</Link>
+          <Link to="/about">About</Link>
           <Link>Contact</Link>
           <Link>Services</Link>
 
