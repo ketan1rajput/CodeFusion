@@ -15,7 +15,7 @@ import {
 import { setHtml, setCss, setJavascript } from "../utils/CodeSlice.js";
 
 const Home = () => {
-  const [isGridLayout, setIsGridLayout] = useState(false);
+  const [isGridLayout, setIsGridLayout] = useState(true);
   const [codeData, setCodeData] = useState([]);
   const [codes, setCodes] = useState([]);
 
