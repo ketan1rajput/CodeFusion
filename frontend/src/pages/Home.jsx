@@ -68,10 +68,10 @@ const Home = () => {
     axios
       .post(`${import.meta.env.VITE_BACKEND_URL}/api/delete/${codeId}`)
       .then((res) => {
-        setCodeData(
-          (prevCodes) => prevCodes.filter((code) => code.code_id !== codeId),
-          dispatch(removeCodeId(codeId))
+        setCodeData((prevCodes) =>
+          prevCodes.filter((code) => code.code_id !== codeId)
         );
+        dispatch(removeCodeId(codeId));
       })
       .catch((error) => error);
   };
