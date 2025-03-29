@@ -51,8 +51,7 @@ router.post("/login", loginMiddleware, (req, res) => {
 //sign up route
 router.post("/sign-up", (req, res) => {
   let credentials = req.body;
-  signUp(credentials);
-  res.send("Sign up successfull");
+  signUp(credentials, res);
 });
 
 //route to show all saved codes

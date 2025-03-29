@@ -28,7 +28,7 @@ const Navbar = ({ isGridLayout, setIsGridLayout }) => {
         persistor.purge(); // Clears persisted state in localStorage
         persistor.flush(); // Ensures pending writes are flushed
         dispatch(setUserId(null)); // Reset user state in Redux
-        navigate("/signUp"); // Redirect to signUp page
+        navigate("/"); // Redirect to signUp page
       })
       .catch((err) => console.error("Logout Failed", err));
   };

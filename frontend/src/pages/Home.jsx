@@ -64,20 +64,21 @@ const Home = () => {
       });
   };
 
-  const handleDelete = () => {
+  const handleDelete = (codeId) => {
     axios
       .post(`${import.meta.env.VITE_BACKEND_URL}/api/delete/${codeId}`)
       .then((res) => {
-        setCodeData((prevCodes) =>
-          prevCodes.filter((code) => code.code_id !== codeId)
+        setCodeData(
+          (prevCodes) => prevCodes.filter((code) => code.code_id !== codeId),
+          dispatch(removeCodeId(codeId))
         );
       })
       .catch((error) => error);
   };
 
-  const fetchCode = (codeId) => {
-    navigate(`/editor/${codeId}`);
-  };
+  // const fetchCode = (codeId) => {
+  //   navigate(`/editor/${codeId}`);
+  // };
 
   const handleCreateClick = () => {
     navigate(`/editor/new`);
@@ -109,7 +110,7 @@ const Home = () => {
                 key={item.code_id} // ✅ Use a unique key
                 index={index}
                 codeDetails={item}
-                handleDelete={handleDelete}
+                handleDelete={() => handleDelete(item.code_id)}
               />
             ))}
           </div>

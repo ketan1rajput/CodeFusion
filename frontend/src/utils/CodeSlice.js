@@ -21,9 +21,12 @@ const codeSlice = createSlice({
     },
     setJavascript: (state, action) => {
       state.javascript = action.payload;
-      },
+    },
     setCodeId: (state, action) => {
       state.code_id = action.payload;
+    },
+    removeCodeId: (state, action) => {
+      state.code_id = state.code_id.filter((id) => id !== action.payload);
     },
   },
 });
