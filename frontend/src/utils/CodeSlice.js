@@ -28,10 +28,21 @@ const codeSlice = createSlice({
     removeCodeId: (state, action) => {
       state.code_id = state.code_id.filter((id) => id !== action.payload);
     },
+
+    // to store only the selected code when searched
+
+    setSelectedCode: (state, action) => {
+      const { html, css, javascript, code_id } = action.payload;
+      state.html = html;
+      state.css = css;
+      state.javascript = javascript;
+      state.code_id = code_id;
+    },
   },
 });
 
 //action is like dispatch(setUsername(username)) which will trigger the reducer function to change the state and put value in username variable
 
-export const { setHtml, setCss, setJavascript } = codeSlice.actions;
+export const { setHtml, setCss, setJavascript, setSelectedCode } =
+  codeSlice.actions;
 export default codeSlice.reducer;

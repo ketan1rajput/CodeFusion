@@ -1,3 +1,4 @@
+const { where, Op } = require("sequelize");
 const Code = require("../../models/Code");
 const User = require("../../models/User");
 
@@ -100,6 +101,23 @@ async function deleteCode(id) {
   return true;
 }
 
+async function searchCode(title, username, res) {
+  try {
+    const codeDetails = await Code.findAll({
+      where: {
+        username: username,
+        code_title: {
+          [Op.like]: `%${title}%`, //partial match, case sensitive
+        },
+      },
+    });
+    res.status(200).json(codeDetails);
+  } catch (error) {
+    console.log("Error", error);
+    res.status(500).send("Server Error");
+  }
+}
+
 async function fetchCode(id) {
   const codeData = await Code.findOne({
     where: {
@@ -114,4 +132,11 @@ async function fetchCode(id) {
   return { html_code, css_code, js_code, code_id };
 }
 
-module.exports = { saveCode, showAllCode, fetchCode, saveNewCode, deleteCode };
+module.exports = {
+  saveCode,
+  showAllCode,
+  fetchCode,
+  saveNewCode,
+  deleteCode,
+  searchCode,
+};

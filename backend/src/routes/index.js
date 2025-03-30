@@ -15,6 +15,7 @@ const {
   fetchCode,
   saveNewCode,
   deleteCode,
+  searchCode,
 } = require("../controllers/CodeController");
 
 app.use(express.json());
@@ -122,6 +123,15 @@ router.post("/delete/:id", async (req, res) => {
       message: "Deleted successfully",
     });
   }
+});
+
+// route for search code based on title
+router.get(`/search`, async (req, res) => {
+  const { title, username } = req.query;
+  if (title) {
+    searchCode(title, username, res);
+  }
+  console.log("this is title", title);
 });
 
 //route for logout
