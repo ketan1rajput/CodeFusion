@@ -36,7 +36,7 @@
 - **Authentication**: 
   - Login and registration system using JWT tokens for secure user authentication.
 
-- **Search (debouncing) **: 
+- **Search (debouncing)**: 
   - Users can search for code by entering titile of code, debouncing method is used for optimized search
 
 ## 🚀 Getting Started
