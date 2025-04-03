@@ -90,8 +90,7 @@ router.post("/save-new-code", (req, res) => {
 //route to save a code
 router.post("/save/:id", (req, res) => {
   let codeDetails = req.body;
-  let userId = req?.params?.id;
-  let saveCodeData = saveCode(codeDetails, userId);
+  let saveCodeData = saveCode(codeDetails);
   if (saveCodeData) {
     res.status(200).send({
       success: true,

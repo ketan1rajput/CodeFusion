@@ -1,9 +1,8 @@
 const sequelize = require("./src/db_connect/sequelize");
-const { User } = require("./models/User");
-const { Code } = require("./models/Code")
+const { User, Code } = require("./models/Assosiations");
 
 async function syncModels() {
-    try {
+  try {
     await sequelize.sync({ alter: true });
     console.log("All models were synchronized successfully.");
   } catch (error) {

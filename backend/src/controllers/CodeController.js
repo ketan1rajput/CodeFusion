@@ -1,8 +1,7 @@
 const { where, Op } = require("sequelize");
-const Code = require("../../models/Code");
-const User = require("../../models/User");
+const { Code, User } = require("../../models/Assosiations");
 
-async function saveCode(codeDetails, userId) {
+async function saveCode(codeDetails) {
   const {
     title,
     htmlCode,
@@ -10,7 +9,7 @@ async function saveCode(codeDetails, userId) {
     javaScriptCode,
     codeName,
     username,
-    userid,
+    userId,
   } = codeDetails;
   let filterUserId;
   console.log(userId);
@@ -104,13 +103,22 @@ async function deleteCode(id) {
 async function searchCode(title, username, res) {
   try {
     const codeDetails = await Code.findAll({
+      include: [
+        {
+          model: User,
+          where: { username: username }, // Filter by username
+          attributes: [], // Only need username for filtering, not for output
+        },
+      ],
       where: {
-        username: username,
         code_title: {
           [Op.like]: `%${title}%`, //partial match, case sensitive
         },
       },
     });
+    if (codeDetails.length === 0) {
+      return res.status(404).json({ message: "No code found" });
+    }
     res.status(200).json(codeDetails);
   } catch (error) {
     console.log("Error", error);

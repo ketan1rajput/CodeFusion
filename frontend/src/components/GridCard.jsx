@@ -7,8 +7,24 @@ import { useNavigate } from "react-router-dom";
 
 const GridCard = ({ codeDetails, handleDelete }) => {
   const [isDeleteModelShow, setIsDeleteModelShow] = useState(false);
-  const [isFormattedDate, setIsFormattedDate] = useState("");
-  const codeId = useSelector((state) => state.user.codeId);
+
+  const createdAtDate = new Date(codeDetails.createdAt).toLocaleDateString(
+    "en-GB"
+  );
+  const createdAtTime = new Date(codeDetails.createdAt).toLocaleTimeString(
+    "en-GB"
+  );
+
+  const updatedAtDate = new Date(codeDetails.updatedAt).toLocaleDateString(
+    "en-GB"
+  );
+  const updatedAtTime = new Date(codeDetails.updatedAt).toLocaleTimeString(
+    "en-GB"
+  );
+
+  const date = createdAtDate === updatedAtDate ? createdAtDate : updatedAtDate;
+  const time = createdAtTime === updatedAtTime ? createdAtTime : updatedAtTime;
+
   const navigate = useNavigate();
 
   return (
@@ -23,7 +39,7 @@ const GridCard = ({ codeDetails, handleDelete }) => {
         </h3>
         <div className="flex items-center justify-between">
           <p className="text-[14px] text-[gray]">
-            Created in {isFormattedDate}
+            Created in {date}, {time}
           </p>
           <img
             onClick={(e) => {

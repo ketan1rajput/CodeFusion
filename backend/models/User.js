@@ -10,7 +10,7 @@ const User = sequelize.define("User", {
   isLoggedIn: {
     type: DataTypes.BOOLEAN,
     allowNull: true,
-    defaultValue: false
+    defaultValue: false,
   },
   email: {
     type: DataTypes.STRING,
@@ -22,6 +22,5 @@ const User = sequelize.define("User", {
     allowNull: false,
   },
 });
-
 
 module.exports = User;
