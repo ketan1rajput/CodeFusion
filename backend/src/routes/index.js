@@ -8,6 +8,12 @@ const loginMiddleware =
 const authenticateToken =
   require("../middlewares/authenticateToken").authenticateToken;
 const { signUp, login } = require("../controllers/LoginController");
+const {
+  loginSchema,
+  signUpSchema,
+  codeSaveSchema,
+  detailsSchema,
+} = require("../validators/validator");
 
 const {
   saveCode,
@@ -36,6 +42,13 @@ app.use(authenticateToken);
 
 //login route
 router.post("/login", loginMiddleware, (req, res) => {
+  const { error } = loginSchema.validate(req.body, { abortEarly: false });
+
+  if (error) {
+    const messages = error.details.map((err) => err.message);
+    return res.status(400).json({ success: false, error: messages });
+  }
+
   res.cookie("token", req.token, {
     httpOnly: true,
     secure: "false",
@@ -51,12 +64,26 @@ router.post("/login", loginMiddleware, (req, res) => {
 
 //sign up route
 router.post("/sign-up", (req, res) => {
+  const { error } = signUpSchema.validate(req.body, { abortEarly: false });
   let credentials = req.body;
+
+  if (error) {
+    const messages = error.details.map((err) => err.message);
+    return res.status(400).json({ success: false, errors: messages });
+  }
+
   signUp(credentials, res);
 });
 
 //route to show all saved codes
 router.post("/all-codes/:id", async (req, res) => {
+  const { error } = detailsSchema.validate(req.body, { abortEarly: false });
+
+  if (error) {
+    const messages = error.details.map((err) => err.message);
+    return res.status(400).json({ success: false, errors: messages });
+  }
+
   const { username, userId } = req.body;
   const showAllDetails = await showAllCode(username, userId);
   if (showAllDetails) {
@@ -74,6 +101,13 @@ router.post("/all-codes/:id", async (req, res) => {
 
 router.post("/save-new-code", (req, res) => {
   let codeDetails = req.body;
+  const { error } = codeSaveSchema.validate(req.body, { abortEarly: false });
+
+  if (error) {
+    const messages = error.details.map((err) => err.message);
+    return res.status(400).json({ success: false, errors: messages });
+  }
+
   let saveCodeData = saveNewCode(codeDetails);
   if (saveCodeData) {
     res.status(200).send({
@@ -87,6 +121,7 @@ router.post("/save-new-code", (req, res) => {
     });
   }
 });
+
 //route to save a code
 router.post("/save/:id", (req, res) => {
   let codeDetails = req.body;

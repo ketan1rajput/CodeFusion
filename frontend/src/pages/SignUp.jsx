@@ -9,7 +9,7 @@ import {
   setUserId,
 } from "../utils/UserSlice.js";
 import PopupModal from "../components/PopupModal.jsx";
-import validationSchema from "../utils/validationSchema.js"; // ✅ Import Yup schema
+import { loginSchema, signUpSchema } from "../utils/validationSchema.js"; // ✅ Import both schemas
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +18,7 @@ const SignUp = () => {
     email: "",
     password: "",
   });
+
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,26 +30,37 @@ const SignUp = () => {
   const [modalType, setModalType] = useState("success");
   const [message, setMessage] = useState("");
 
-  // ✅ Toggle between login and signup
-  const handleToggle = () => setIsLogin(!isLogin);
+  // ✅ Toggle login/signup
+  const handleToggle = () => {
+    setIsLogin((prev) => !prev);
+    setErrors({}); // clear validation errors
+    setFormData({
+      username: "",
+      name: "",
+      email: "",
+      password: "",
+    });
+  };
 
-  // ✅ Handle Input Change with Yup Validation
+  // ✅ Handle input changes with dynamic schema
   const handleChange = async (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
+    const currentSchema = isLogin ? loginSchema : signUpSchema;
+
     try {
-      await validationSchema.validateAt(name, { [name]: value });
-      setErrors((prev) => ({ ...prev, [name]: "" })); // Clear error if valid
+      await currentSchema.validateAt(name, { [name]: value });
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     } catch (err) {
-      setErrors((prev) => ({ ...prev, [name]: err.message })); // Set error if invalid
+      setErrors((prev) => ({ ...prev, [name]: err.message }));
     }
   };
 
-  // ✅ Handle Login
+  // ✅ Login handler
   const handleLogin = async () => {
     try {
-      await validationSchema.validate(formData, { abortEarly: false });
+      await loginSchema.validate(formData, { abortEarly: false });
     } catch (validationError) {
       const newErrors = {};
       validationError.inner.forEach((err) => {
@@ -70,23 +82,22 @@ const SignUp = () => {
       .then((res) => {
         dispatch(setReduxUsername(res.data.user.username));
         dispatch(setUserId(res.data.user.id));
-
         setMessage("Login successful!");
         setModalType("success");
         setIsOpen(true);
         navigate(`/home`);
       })
-      .catch((err) => {
+      .catch(() => {
         setMessage("Invalid username or password!");
         setModalType("error");
         setIsOpen(true);
       });
   };
 
-  // ✅ Handle Signup
+  // ✅ SignUp handler
   const handleSignUp = async () => {
     try {
-      await validationSchema.validate(formData, { abortEarly: false });
+      await signUpSchema.validate(formData, { abortEarly: false });
     } catch (validationError) {
       const newErrors = {};
       validationError.inner.forEach((err) => {
@@ -103,18 +114,17 @@ const SignUp = () => {
         setMessage("Account created successfully! Click login to continue.");
         setModalType("success");
         setIsOpen(true);
-        navigate("/");
+        setIsLogin(true); // toggle to login after success
       })
       .catch((error) => {
         if (error.response?.status === 409) {
           setMessage("Username already exists!");
           setModalType("error");
-          setIsOpen(true);
         } else {
           setMessage("Signup failed. Try again!");
           setModalType("error");
-          setIsOpen(true);
         }
+        setIsOpen(true);
       });
   };
 
@@ -122,7 +132,7 @@ const SignUp = () => {
     <div className="container w-screen min-h-screen flex items-center justify-between pl-[100px]">
       <div className="left w-[35%]">
         <img className="w-[200px]" src={logo} alt="Logo" />
-        <form className="w-full mt-[60px]" onSubmit={(e) => e.preventDefault()}>
+        <div className="w-full mt-[60px]">
           <div className="inputBox">
             <input
               required
@@ -178,24 +188,24 @@ const SignUp = () => {
               <p className="text-red-500">{errors.password}</p>
             )}
           </div>
-        </form>
 
-        <p className="text-[grey]">
-          {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <button onClick={handleToggle} className="text-[#00AEEF]">
-            {isLogin ? "Sign Up" : "Login"}
-          </button>
-        </p>
+          <p className="text-[grey] mt-2">
+            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            <button onClick={handleToggle} className="text-[#00AEEF]">
+              {isLogin ? "Sign Up" : "Login"}
+            </button>
+          </p>
 
-        {isLogin ? (
-          <button className="btnBlue w-full mt-[20px]" onClick={handleLogin}>
-            Login
-          </button>
-        ) : (
-          <button className="btnBlue w-full mt-[20px]" onClick={handleSignUp}>
-            Sign Up
-          </button>
-        )}
+          {isLogin ? (
+            <button className="btnBlue w-full mt-[20px]" onClick={handleLogin}>
+              Login
+            </button>
+          ) : (
+            <button className="btnBlue w-full mt-[20px]" onClick={handleSignUp}>
+              Sign Up
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="right w-[55%]">
