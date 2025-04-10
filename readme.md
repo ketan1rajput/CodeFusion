@@ -19,6 +19,10 @@
 - **Authentication**:
   - JWT (JSON Web Tokens)
 
+- **Validation**
+  - Yup (frontend)
+  - Joi (backend)
+
 ## 💡 Features
 
 - **Write Code**: 
