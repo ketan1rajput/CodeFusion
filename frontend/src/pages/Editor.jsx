@@ -22,6 +22,7 @@ const Editior = () => {
 
   const username = useSelector((state) => state.user.username);
   const userid = useSelector((state) => state.user.userId);
+  // const codeid = useSelector((state) => state.)
 
   // getting the code for particular id
 
@@ -122,6 +123,7 @@ const Editior = () => {
           htmlCode: htmlCode,
           cssCode: cssCode,
           javaScriptCode: jsCode,
+          codeId: codeId,
         })
         .then((res) => {
           if (res.data) {
@@ -161,7 +163,7 @@ const Editior = () => {
               </div>
               {isDialogOpen && (
                 <DialogBox
-                  text="save "
+                  text="save"
                   codetitle={htmlCode} // Optionally pass the title as a prop if needed
                   onClose={handleDialogClose}
                   onConfirm={handleDialogConfirm}

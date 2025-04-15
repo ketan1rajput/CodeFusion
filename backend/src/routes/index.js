@@ -99,6 +99,7 @@ router.post("/all-codes/:id", async (req, res) => {
   }
 });
 
+//this is for saving a new code
 router.post("/save-new-code", (req, res) => {
   let codeDetails = req.body;
   const { error } = codeSaveSchema.validate(req.body, { abortEarly: false });
@@ -122,7 +123,7 @@ router.post("/save-new-code", (req, res) => {
   }
 });
 
-//route to save a code
+//route to update a code
 router.post("/save/:id", (req, res) => {
   let codeDetails = req.body;
   let saveCodeData = saveCode(codeDetails);

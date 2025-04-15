@@ -2,32 +2,12 @@ const { where, Op } = require("sequelize");
 const { Code, User } = require("../../models/Assosiations");
 
 async function saveCode(codeDetails) {
-  const {
-    title,
-    htmlCode,
-    cssCode,
-    javaScriptCode,
-    codeName,
-    username,
-    userId,
-  } = codeDetails;
-  let filterUserId;
-  console.log(userId);
-  if (userId) {
-    filterUserId = userId;
-  } else {
-    userId = await User.findOne({
-      attributes: ["id"],
-      where: {
-        isLoggedIn: true,
-        username: username,
-        id: userid,
-      },
-    });
-    filterUserId = userId.dataValues.id;
-  }
+  const { title, htmlCode, cssCode, javaScriptCode, codeName, userId, codeId } =
+    codeDetails;
+
   await Code.upsert({
-    user_id: filterUserId,
+    code_id: codeId,
+    user_id: userId,
     code_title: title,
     code_name: codeName,
     html_code: htmlCode,

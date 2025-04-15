@@ -1,7 +1,7 @@
 import { useState } from "react";
 import PopupModal from "./PopupModal";
 
-const DialogBox = ({ codetitle, text, onClose, onConfirm }) => {
+const DialogBox = ({ text, onClose, onConfirm }) => {
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
 

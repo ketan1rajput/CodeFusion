@@ -23,8 +23,9 @@ const loginSchema = Joi.object({
     "string.empty": "Username is required",
     "string.min": "Username must be at least 3 characters",
   }),
-  name: Joi.string().required().messages({
-    "string.empty": "Name is required",
+  password: Joi.string().min(5).required().messages({
+    "string.empty": "Password is required",
+    "string.min": "Password must be atleast 5 characters",
   }),
 });
 
@@ -52,5 +53,9 @@ const codeSaveSchema = Joi.object({
   }),
 });
 
-
-module.exports = { signUpSchema, loginSchema, detailsSchema, codeSaveSchema };
+module.exports = {
+  signUpSchema,
+  loginSchema,
+  detailsSchema,
+  codeSaveSchema,
+};

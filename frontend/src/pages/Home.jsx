@@ -20,6 +20,32 @@ const Home = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const searchBar = useRef(null); // Use useRef here for direct reference
+
+  // Function to trigger search bar with CTRL+K
+  const triggerSearchBar = (event) => {
+    if (event.ctrlKey && event.key === "k") {
+      event.preventDefault();
+      // Focus the search input
+      if (searchBar.current) {
+        searchBar.current.focus();
+      }
+    }
+  };
+
+  // Event listener setup in useEffect
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      triggerSearchBar(event); // Check for Ctrl + K
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup the event listener on unmount
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   // ✅ Fetch all codes initially
   const fetchUserCodes = () => {
@@ -128,8 +154,10 @@ const Home = () => {
         <div className="flex items-center gap-1 relative">
           <div className="inputBox !w-[400px]">
             <input
+              ref={searchBar} // Set the ref to the search bar
+              id="Search_Box"
               type="text"
-              placeholder="Search Here... !"
+              placeholder="Search Here or press CTRL + k"
               value={query}
               onChange={handleSearch}
             />
