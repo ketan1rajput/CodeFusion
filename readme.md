@@ -36,6 +36,9 @@
 
 - **Save Code Online**: 
   - Users can save their code to the database and access it later from any device by logging in.
+ 
+- **Download Code as ZIP**: 
+  - Users can download their code as zip, zip will include .html, .css, .js code files.
   
 - **Authentication**: 
   - Login and registration system using JWT tokens for secure user authentication.
