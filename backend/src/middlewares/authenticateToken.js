@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.SECRET_KEY || "";
 
 function authenticateToken(req, res, next) {
-  let excludedRoutes = ["/login", "/logout", "/sign-up"];
+  let excludedRoutes = ["/login", "/logout", "/sign-up", "/api/download-zip"];
   if (excludedRoutes.includes(req.path)) {
     return next();
   }

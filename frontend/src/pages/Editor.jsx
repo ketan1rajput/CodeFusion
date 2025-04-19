@@ -4,6 +4,7 @@ import Editor from "@monaco-editor/react";
 import { MdLightMode } from "react-icons/md";
 import { AiOutlineExpandAlt } from "react-icons/ai";
 import { FaSave } from "react-icons/fa";
+import { RiFileDownloadLine } from "react-icons/ri";
 import axios from "axios";
 import BackButton from "../components/BackButton";
 import DialogBox from "../components/DialogBox";
@@ -37,6 +38,23 @@ const Editior = () => {
       })
       .catch((error) => error);
   };
+
+  const downloadZip = async () => {
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/download-zip`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ htmlCode, cssCode, jsCode }),
+      }
+    );
+    const blob = await res.blob();
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = "project.zip";
+    link.click();
+  };
+
 
   useEffect(() => {
     if (!window.location.pathname.includes("/new")) {
@@ -160,6 +178,9 @@ const Editior = () => {
               <BackButton />
               <div className="cursor-pointer" onClick={handleDialogOpen}>
                 <FaSave />
+              </div>
+              <div className="cursor-pointer" onClick={downloadZip}>
+                <RiFileDownloadLine />
               </div>
               {isDialogOpen && (
                 <DialogBox
