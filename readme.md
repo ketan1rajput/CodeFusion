@@ -1,7 +1,7 @@
 
 # CodeFusion: Online HTML, CSS, and JS IDE
 
-**CodeFusion** is an interactive online Integrated Development Environment (IDE) where users can write and execute HTML, CSS, and JavaScript code in real-time. The app features a split-screen layout: one side for coding and the other for viewing live output. Users can save their code online, making it accessible anytime, and switch between dark and light themes for a personalized experience.
+**CodeFusion** is an interactive online Integrated Development Environment (IDE) where users can write and execute HTML, CSS, and JavaScript code in real-time. The app features a split-screen layout: one side for coding and the other for viewing live output. Users can save their code online, download code as zip, making it accessible anytime, and switch between dark and light themes for a personalized experience.
 
 ## 🛠️ Technologies Used
 
@@ -36,6 +36,9 @@
 
 - **Save Code Online**: 
   - Users can save their code to the database and access it later from any device by logging in.
+ 
+- **Download Code as ZIP**: 
+  - Users can download their code as zip, zip will include .html, .css, .js code files.
   
 - **Authentication**: 
   - Login and registration system using JWT tokens for secure user authentication.
