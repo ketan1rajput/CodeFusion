@@ -7,8 +7,9 @@ function authenticateToken(req, res, next) {
     "/api/logout",
     "/api/sign-up",
     "/api/download-zip",
+    "/api/fetch-code",
   ];
-  if (excludedRoutes.includes(req.path)) {
+  if (excludedRoutes.some((route) => req.path.startsWith(route))) {
     return next();
   }
   const token = req.cookies?.token;

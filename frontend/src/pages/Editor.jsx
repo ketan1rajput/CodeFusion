@@ -30,12 +30,17 @@ const Editior = () => {
   const getCodeForEdit = (codeId) => {
     axios
       .post(`${import.meta.env.VITE_BACKEND_URL}/api/fetch-code/${codeId}`)
-      .then((res) => {
-        setHtmlCode(res.data.data.html_code);
-        setCssCode(res.data.data.css_code);
-        setJsCode(res.data.data.js_code);
-        console.log(res);
-      })
+      .then(
+        (res) => {
+          setHtmlCode(res.data.data.html_code);
+          setCssCode(res.data.data.css_code);
+          setJsCode(res.data.data.js_code);
+          console.log(res);
+        },
+        {
+          withCredentials: true,
+        }
+      )
       .catch((error) => error);
   };
 
@@ -54,7 +59,6 @@ const Editior = () => {
     link.download = "project.zip";
     link.click();
   };
-
 
   useEffect(() => {
     if (!window.location.pathname.includes("/new")) {
@@ -115,14 +119,20 @@ const Editior = () => {
 
     if (codeId && codeId.toString() == "new") {
       axios
-        .post(`${import.meta.env.VITE_BACKEND_URL}/api/save-new-code`, {
-          username: username,
-          userId: userid,
-          title: title, // Send the title from the input field
-          htmlCode: htmlCode,
-          cssCode: cssCode,
-          javaScriptCode: jsCode,
-        })
+        .post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/save-new-code`,
+          {
+            username: username,
+            userId: userid,
+            title: title, // Send the title from the input field
+            htmlCode: htmlCode,
+            cssCode: cssCode,
+            javaScriptCode: jsCode,
+          },
+          {
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           if (res.data) {
             console.log(res.data.message);
@@ -134,15 +144,21 @@ const Editior = () => {
       setIsDialogOpen(false);
     } else {
       axios
-        .post(`${import.meta.env.VITE_BACKEND_URL}/api/save/${codeId}`, {
-          username: username,
-          userId: userid,
-          title: title, // Send the title from the input field
-          htmlCode: htmlCode,
-          cssCode: cssCode,
-          javaScriptCode: jsCode,
-          codeId: codeId,
-        })
+        .post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/save/${codeId}`,
+          {
+            username: username,
+            userId: userid,
+            title: title, // Send the title from the input field
+            htmlCode: htmlCode,
+            cssCode: cssCode,
+            javaScriptCode: jsCode,
+            codeId: codeId,
+          },
+          {
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           if (res.data) {
             console.log(res.data.message);

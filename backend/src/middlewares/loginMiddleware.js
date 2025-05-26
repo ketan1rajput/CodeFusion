@@ -30,7 +30,13 @@ async function loginMiddleware(req, res, next) {
       { expiresIn: "1h" }
     );
 
-    await User.update({ isLoggedIn: true }, { where: { username, password } });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 3600000, // 1 hour
+    });
+
+    await User.update({ isLoggedIn: true }, { where: { username } });
 
     req.user = existingUser;
     req.token = token;

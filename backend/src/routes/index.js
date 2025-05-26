@@ -50,11 +50,6 @@ router.post("/login", loginMiddleware, (req, res) => {
     return res.status(400).json({ success: false, error: messages });
   }
 
-  res.cookie("token", req.token, {
-    httpOnly: true,
-    secure: "false",
-    sameSite: "lax",
-  });
   res.json({
     success: true,
     message: "Login successful",
