@@ -8,6 +8,7 @@ function authenticateToken(req, res, next) {
     "/api/sign-up",
     "/api/download-zip",
     "/api/fetch-code",
+    "/api/frontend-questions"
   ];
   if (excludedRoutes.some((route) => req.path.startsWith(route))) {
     return next();

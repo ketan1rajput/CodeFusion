@@ -173,7 +173,6 @@ const Editior = () => {
 
   return (
     <>
-      <EditorNavbar />
       <div className="flex">
         <div className={`left ${isExpanded ? "w-full" : "w-1/2"}`}>
           <div className="tabs flex items-center justify-between gap-2 w-full bg-[#1A1919] h-[50px] px-[40px]">

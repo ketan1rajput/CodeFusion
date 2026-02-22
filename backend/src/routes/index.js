@@ -11,6 +11,8 @@ const authenticateToken =
   require("../middlewares/authenticateToken").authenticateToken;
 
 const { signUp, login } = require("../controllers/LoginController");
+const frontendQuestionRoutes = require("./questions");
+
 const {
   loginSchema,
   signUpSchema,
@@ -134,10 +136,11 @@ router.get("/search", async (req, res) => {
   if (title) {
     searchCode(title, username, res);
   }
-  console.log("this is title", title);
 });
 
-// ✅ ZIP download route using router (correct way!)
+app.use("/api/frontend-questions", frontendQuestionRoutes);
+
+// ✅ ZIP download route using router
 router.post("/download-zip", async (req, res) => {
   const { htmlCode, cssCode, jsCode } = req.body;
 

@@ -1,5 +1,6 @@
 const sequelize = require("./src/db_connect/sequelize");
 const { User, Code } = require("./models/Assosiations");
+require("./models/FrontendQuestion");
 
 async function syncModels() {
   try {

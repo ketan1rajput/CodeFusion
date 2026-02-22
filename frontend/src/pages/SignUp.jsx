@@ -9,7 +9,7 @@ import {
   setUserId,
 } from "../utils/UserSlice.js";
 import PopupModal from "../components/PopupModal.jsx";
-import { loginSchema, signUpSchema } from "../utils/validationSchema.js"; // ✅ Import both schemas
+import { loginSchema, signUpSchema } from "../utils/validationSchema.js";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({

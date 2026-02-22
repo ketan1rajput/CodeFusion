@@ -1,5 +1,7 @@
 const { where, Op } = require("sequelize");
 const { Code, User } = require("../../models/Assosiations");
+const FrontendQuestion = require("../../models/FrontendQuestion");
+
 
 async function saveCode(codeDetails) {
   const { title, htmlCode, cssCode, javaScriptCode, codeName, userId, codeId } =
@@ -106,6 +108,22 @@ async function searchCode(title, username, res) {
   }
 }
 
+async function getFrontendQuestion(id) {
+  const question = await FrontendQuestion.findByPk(id, {
+    attributes: [
+      "id",
+      "title",
+      "description",
+      "starter_html",
+      "starter_css",
+      "starter_js",
+      "difficulty"
+    ]
+  });
+
+  return question;
+}
+
 async function fetchCode(id) {
   const codeData = await Code.findOne({
     where: {
@@ -127,4 +145,5 @@ module.exports = {
   saveNewCode,
   deleteCode,
   searchCode,
+  getFrontendQuestion
 };

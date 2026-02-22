@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import Navbar from "../components/Navbar";
 import ListCard from "../components/ListCard";
 import GridCard from "../components/GridCard";
 import { useNavigate } from "react-router-dom";
@@ -146,7 +145,6 @@ const Home = () => {
 
   return (
     <div>
-      <Navbar isGridLayout={isGridLayout} setIsGridLayout={setIsGridLayout} />
 
       <div className="flex items-center justify-between px-[100px] my-[40px]">
         <h2 className="text-2xl">Hi, {userName}👋</h2>
