@@ -130,6 +130,8 @@ router.post("/delete/:id", async (req, res) => {
   }
 });
 
+app.use(authenticateToken);
+
 // Search code
 router.get("/search", async (req, res) => {
   const { title, username } = req.query;
@@ -174,7 +176,6 @@ router.post("/logout", (req, res) => {
 });
 
 // ✅ Apply authenticateToken after login/signup routes
-app.use(authenticateToken);
 
 // ✅ Mount the router finally
 app.use("/api", router);

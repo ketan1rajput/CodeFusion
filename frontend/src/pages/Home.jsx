@@ -88,7 +88,10 @@ const Home = () => {
         .get(
           `${
             import.meta.env.VITE_BACKEND_URL
-          }/api/search?title=${titleValue}&username=${userName}`
+          }/api/search?title=${encodeURIComponent(
+            titleValue
+          )}&username=${encodeURIComponent(userName)}`,
+          { withCredentials: true }
         )
         .then((res) => setResults(res.data))
         .catch((err) => console.error("Error in search:", err));
@@ -125,7 +128,11 @@ const Home = () => {
   // ✅ Handle code deletion
   const handleDelete = (codeId) => {
     axios
-      .post(`${import.meta.env.VITE_BACKEND_URL}/api/delete/${codeId}`)
+      .post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/delete/${codeId}`,
+        {},
+        { withCredentials: true }
+      )
       .then(() => {
         setCodeData((prevCodes) =>
           prevCodes.filter((code) => code.code_id !== codeId)

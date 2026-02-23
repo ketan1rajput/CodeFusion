@@ -29,18 +29,17 @@ const Editior = () => {
 
   const getCodeForEdit = (codeId) => {
     axios
-      .post(`${import.meta.env.VITE_BACKEND_URL}/api/fetch-code/${codeId}`)
-      .then(
-        (res) => {
-          setHtmlCode(res.data.data.html_code);
-          setCssCode(res.data.data.css_code);
-          setJsCode(res.data.data.js_code);
-          console.log(res);
-        },
-        {
-          withCredentials: true,
-        }
+      .post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/fetch-code/${codeId}`,
+        {},
+        { withCredentials: true }
       )
+      .then((res) => {
+        setHtmlCode(res.data.data.html_code);
+        setCssCode(res.data.data.css_code);
+        setJsCode(res.data.data.js_code);
+        console.log(res);
+      })
       .catch((error) => error);
   };
 
