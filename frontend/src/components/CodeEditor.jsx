@@ -1,5 +1,26 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
+
+function escapeClosingScriptTags(code = "") {
+  return code.replace(/<\/script/gi, "<\\/script");
+}
+
+function buildPreviewDocument(html, css, js) {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>${css}</style>
+      </head>
+      <body>
+        ${html}
+        <script>${escapeClosingScriptTags(js)}</script>
+      </body>
+    </html>
+  `;
+}
 
 const CodeEditor = ({
   mode = "snippet",
@@ -7,40 +28,25 @@ const CodeEditor = ({
   initialCss = "",
   initialJs = "",
   onSave,
-  onSubmit
+  onSubmit,
 }) => {
+  const iframeRef = useRef(null);
   const [tab, setTab] = useState("html");
   const [htmlCode, setHtmlCode] = useState(initialHtml);
   const [cssCode, setCssCode] = useState(initialCss);
   const [jsCode, setJsCode] = useState(initialJs);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    run(htmlCode, cssCode, jsCode);
+    if (!iframeRef.current) {
+      return;
+    }
+
+    iframeRef.current.srcdoc = buildPreviewDocument(htmlCode, cssCode, jsCode);
   }, [htmlCode, cssCode, jsCode]);
-
-  const run = (html, css, js) => {
-    const iframe = document.getElementById("iframe");
-    if (!iframe) return;
-
-    iframe.srcdoc = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>${css}</style>
-      </head>
-      <body>
-        ${html}
-        <script>${js}<\/script>
-      </body>
-      </html>
-    `;
-  };
 
   return (
     <div className="flex">
-      <div className={`left ${isExpanded ? "w-full" : "w-1/2"}`}>
-        
+      <div className="left w-1/2">
         {/* Tabs */}
         <div className="flex gap-3 bg-[#1A1919] p-3">
           {["html", "css", "js"].map((item) => (
@@ -108,8 +114,10 @@ const CodeEditor = ({
       </div>
 
       <iframe
-        id="iframe"
-        className={`${isExpanded ? "hidden" : "w-1/2"} bg-white`}
+        ref={iframeRef}
+        title="Code preview"
+        sandbox="allow-scripts"
+        className="w-1/2 bg-white"
       />
     </div>
   );

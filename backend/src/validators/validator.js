@@ -39,17 +39,11 @@ const detailsSchema = Joi.object({
 });
 
 const codeSaveSchema = Joi.object({
-  cssCode: Joi.allow(""),
-  htmlCode: Joi.allow(""),
-  javaScriptCode: Joi.allow(""),
-  title: Joi.string().required().messages({
+  cssCode: Joi.string().allow("").required(),
+  htmlCode: Joi.string().allow("").required(),
+  javaScriptCode: Joi.string().allow("").required(),
+  title: Joi.string().trim().required().messages({
     "string.empty": "title is required",
-  }),
-  userId: Joi.required().messages({
-    "string.empty": "user id is required",
-  }),
-  username: Joi.required().messages({
-    "string.empty": "username is required",
   }),
 });
 

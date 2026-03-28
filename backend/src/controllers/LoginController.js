@@ -1,22 +1,29 @@
-const { where } = require("sequelize");
+const { Op } = require("sequelize");
 const User = require("../../models/User");
 const bcrypt = require("bcrypt");
+const { serializeUser } = require("../utils/auth");
 
 const signUp = async (credentials, res) => {
   const { username, name, email, password } = credentials;
 
   try {
-    // Check if the user already exists
-    const existingUser = await User.findOne({ where: { username } });
+    const existingUser = await User.findOne({
+      where: {
+        [Op.or]: [{ username }, { email }],
+      },
+    });
 
     if (existingUser) {
-      return res.status(409).json({ message: "User already exists" });
+      const duplicateField =
+        existingUser.username === username ? "Username" : "Email";
+
+      return res.status(409).json({
+        message: `${duplicateField} already exists`,
+      });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user
     const newUser = await User.create({
       username,
       name,
@@ -26,9 +33,8 @@ const signUp = async (credentials, res) => {
 
     res.status(201).json({
       message: "User created successfully",
-      user: newUser,
+      user: serializeUser(newUser),
     });
-
   } catch (error) {
     console.error("Sign-up Error:", error);
 

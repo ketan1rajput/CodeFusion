@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import codeImg from "../images/code.png";
 import deleteImg from "../images/delete.png";
-import axios from "axios";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const GridCard = ({ codeDetails, handleDelete }) => {
@@ -33,7 +31,7 @@ const GridCard = ({ codeDetails, handleDelete }) => {
         className="gridCard bg-[#141414] w-[270px] p-[10px] h-[180px] cursor-pointer hover:bg-[#202020] rounded-lg shadow-lg shadow-black/50"
         onClick={() => navigate(`/editor/${codeDetails.code_id}`)}
       >
-        <img className="w-[90px]" src={codeImg} alt="" />
+        <img className="w-[90px]" src={codeImg} alt="Code project" />
         <h3 className="text-[20px] w-[90%] line-clamp-1">
           {codeDetails.code_title}
         </h3>
@@ -48,7 +46,7 @@ const GridCard = ({ codeDetails, handleDelete }) => {
             }}
             className="w-[30px] cursor-pointer"
             src={deleteImg}
-            alt=""
+            alt="Delete project"
           />
         </div>
       </div>

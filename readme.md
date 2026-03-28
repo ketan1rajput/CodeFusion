@@ -124,3 +124,8 @@ Special thanks to the following resources and libraries:
 - [Express.js](https://expressjs.com/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Sequelize ORM](https://sequelize.org/)
+
+## Documentation
+
+- [Architecture Guide](docs/ARCHITECTURE.md)
+- [Project Guide](docs/PROJECT_GUIDE.md)

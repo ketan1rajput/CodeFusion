@@ -1,25 +1,25 @@
-import { useEffect, useState, useRef } from "react";
+﻿import { useCallback, useEffect, useRef, useState } from "react";
 import ListCard from "../components/ListCard";
 import GridCard from "../components/GridCard";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useSelector, useDispatch } from "react-redux";
-import { setSelectedCode } from "../utils/CodeSlice.js";
+import { useSelector } from "react-redux";
 
 const Home = () => {
-  const debounceTimeout = useRef(null); // ✅ Use useRef for debouncing
+  const debounceTimeout = useRef(null); //  Use useRef for debouncing
   const [isGridLayout, setIsGridLayout] = useState(true);
   const [codeData, setCodeData] = useState([]);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [pageError, setPageError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const userId = useSelector((state) => state.user.userId);
   const userName = useSelector((state) => state.user.username);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const searchBar = useRef(null); // Use useRef here for direct reference
+  const searchBar = useRef(null);
 
   // Function to trigger search bar with CTRL+K
   const triggerSearchBar = (event) => {
@@ -46,31 +46,38 @@ const Home = () => {
     };
   }, []);
 
-  // ✅ Fetch all codes initially
-  const fetchUserCodes = () => {
-    axios
-      .post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/all-codes/${userId}`,
-        { username: userName, userId: userId },
-        { withCredentials: true }
-      )
-      .then((res) => {
-        const responseData = res.data.data;
-        const codeArray = Object.values(responseData).filter(
-          (item) => typeof item === "object"
-        );
-        setCodeData(codeArray);
-      })
-      .catch((error) => console.log("Error fetching codes:", error));
-  };
+  //  Fetch all codes initially
+  const fetchUserCodes = useCallback(async () => {
+    if (!userId) {
+      setCodeData([]);
+      setIsLoading(false);
+      return;
+    }
 
-  // ✅ Handle search with debounce using useRef
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/all-codes/${userId}`,
+        {},
+        { withCredentials: true }
+      );
+
+      setCodeData(res.data.data?.codes || []);
+      setPageError("");
+    } catch (error) {
+      console.error("Error fetching codes:", error);
+      setPageError("Unable to load your saved projects right now.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId]);
+
+  //  Handle search with debounce using useRef
   const handleSearch = (e) => {
     const titleValue = e.target.value;
     setQuery(titleValue);
 
     if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current); // ✅ Clear previous debounce
+      clearTimeout(debounceTimeout.current); //  Clear previous debounce
     }
 
     if (titleValue.trim()) {
@@ -78,54 +85,44 @@ const Home = () => {
     } else {
       setShowSuggestions(false);
       setResults([]);
-      fetchUserCodes(); // ✅ Reset list when clearing, this will show all user codes as nothing is in search box
+      fetchUserCodes(); //  Reset list when clearing, this will show all user codes as nothing is in search box
       return;
     }
 
-    // ✅ Set debounce with useRef
+    //  Set debounce with useRef
     debounceTimeout.current = setTimeout(() => {
       axios
         .get(
-          `${
-            import.meta.env.VITE_BACKEND_URL
-          }/api/search?title=${encodeURIComponent(
+          `${import.meta.env.VITE_BACKEND_URL}/api/search?title=${encodeURIComponent(
             titleValue
-          )}&username=${encodeURIComponent(userName)}`,
+          )}`,
           { withCredentials: true }
         )
-        .then((res) => setResults(res.data))
-        .catch((err) => console.error("Error in search:", err));
-    }, 400); // 400ms delay
+        .then((res) => setResults(res.data.data || []))
+        .catch((err) => {
+          if (err.response?.status === 404) {
+            setResults([]);
+            return;
+          }
+
+          console.error("Error in search:", err);
+        });
+    }, 400);
   };
 
-  // ✅ Handle suggestion click
+  //  Handle suggestion click
   const handleSelect = (title) => {
-    console.log("Selected title:", title);
-
-    // ✅ Match the correct key (code_title)
+    //  Match the correct key (code_title)
     const selectedCode = results.find((code) => code.code_title === title);
 
     if (selectedCode) {
-      dispatch(
-        setSelectedCode({
-          html: selectedCode.html,
-          css: selectedCode.css,
-          javascript: selectedCode.javascript,
-          code_id: selectedCode.code_id,
-        })
-      );
-
-      // Display only the selected code
       setCodeData([selectedCode]);
-
       setQuery(title);
       setShowSuggestions(false);
-    } else {
-      console.log("Code not found in results");
     }
   };
 
-  // ✅ Handle code deletion
+  //  Handle code deletion
   const handleDelete = (codeId) => {
     axios
       .post(
@@ -141,20 +138,20 @@ const Home = () => {
       .catch((error) => console.error("Error deleting code:", error));
   };
 
-  // ✅ Create new code button click
+  //  Create new code button click
   const handleCreateClick = () => {
     navigate(`/editor/new`);
   };
 
   useEffect(() => {
     fetchUserCodes();
-  }, []);
+  }, [fetchUserCodes]);
 
   return (
     <div>
 
       <div className="flex items-center justify-between px-[100px] my-[40px]">
-        <h2 className="text-2xl">Hi, {userName}👋</h2>
+        <h2 className="text-2xl">Hi, {userName}</h2>
 
         <div className="flex items-center gap-1 relative">
           <div className="inputBox !w-[400px]">
@@ -167,7 +164,7 @@ const Home = () => {
               onChange={handleSearch}
             />
 
-            {/* ✅ Suggestions Dropdown */}
+            {/*  Suggestions Dropdown */}
             {showSuggestions && results.length > 0 && (
               <div className="absolute top-full left-0 w-full bg-white border rounded-md shadow-md z-10">
                 {results.map((item) => (
@@ -184,20 +181,34 @@ const Home = () => {
           </div>
         </div>
 
-        <button onClick={handleCreateClick} className="btnBlue rounded-sm">
-          +
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsGridLayout((currentValue) => !currentValue)}
+            className="rounded-sm border border-white/10 px-4 py-2 text-sm text-slate-200 transition hover:border-cyan-300/30 hover:text-white"
+          >
+            {isGridLayout ? "List View" : "Grid View"}
+          </button>
+          <button onClick={handleCreateClick} className="btnBlue rounded-sm">
+            +
+          </button>
+        </div>
       </div>
 
-      {/* ✅ Cards Section */}
+      {/*  Cards Section */}
       <div className="cards">
-        {isGridLayout ? (
+        {pageError && (
+          <div className="px-[100px] pb-6 text-sm text-rose-300">{pageError}</div>
+        )}
+
+        {isLoading ? (
+          <div className="px-[100px] text-slate-300">Loading your projects...</div>
+        ) : isGridLayout ? (
           <div className="grid px-[100px]">
             {codeData.length > 0 ? (
-              codeData.map((item, index) => (
+              codeData.map((item) => (
                 <GridCard
                   key={item.code_id}
-                  index={index}
                   codeDetails={item}
                   handleDelete={() => handleDelete(item.code_id)}
                 />
@@ -210,7 +221,11 @@ const Home = () => {
           <div className="list px-[100px]">
             {codeData.length > 0 ? (
               codeData.map((item) => (
-                <ListCard key={item.code_id} codeDetails={item} />
+                <ListCard
+                  key={item.code_id}
+                  codeDetails={item}
+                  handleDelete={() => handleDelete(item.code_id)}
+                />
               ))
             ) : (
               <p>No code found</p>
@@ -223,3 +238,4 @@ const Home = () => {
 };
 
 export default Home;
+

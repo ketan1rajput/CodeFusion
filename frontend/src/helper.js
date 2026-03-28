@@ -1,9 +1,11 @@
 export const toggleClass = (element, className) => {
-    let el = document.querySelector(element);
-    el.classList.toggle(className);
-}
+  const matchedElement = document.querySelector(element);
+
+  matchedElement?.classList.toggle(className);
+};
 
 export const removeClass = (element, className) => { 
-    let el = document.querySelector(element);
-    el.classList.remove(className);
-}
+  const matchedElement = document.querySelector(element);
+
+  matchedElement?.classList.remove(className);
+};

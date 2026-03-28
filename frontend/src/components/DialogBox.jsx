@@ -1,22 +1,24 @@
 import { useState } from "react";
-import PopupModal from "./PopupModal";
 
-const DialogBox = ({ text, onClose, onConfirm }) => {
-  const [title, setTitle] = useState("");
+const DialogBox = ({ text, initialValue = "", onClose, onConfirm }) => {
+  const [title, setTitle] = useState(initialValue);
   const [error, setError] = useState("");
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
+    setError("");
   };
 
   const handleConfirm = () => {
-    //pass the title value back to the parent on confirm
-    if (title.length > 0) {
-      onConfirm(title);
+    const trimmedTitle = title.trim();
+
+    if (trimmedTitle.length > 0) {
+      onConfirm(trimmedTitle);
     } else {
-      setError("Title is required !");
+      setError("Title is required.");
     }
   };
+
   return (
     <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-40 z-50 flex justify-center items-center">
       <div className="w-[25vw] h-[25vh] bg-[#141414] rounded-lg p-[20px]">
@@ -30,7 +32,7 @@ const DialogBox = ({ text, onClose, onConfirm }) => {
           className="bg-[#141414] p-1 m-2 rounded-lg"
           value={title}
           onChange={handleTitleChange}
-        ></input>
+        />
         {error && <p className="text-red-500">{error}</p>}
         <div className="flex w-full mt-3 items-center gap-[10px]">
           <button

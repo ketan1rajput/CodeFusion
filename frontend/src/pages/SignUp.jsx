@@ -3,7 +3,7 @@ import logo from "../images/logo.png";
 import image from "../images/authPageSide.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   setUsername as setReduxUsername,
   setUserId,
@@ -22,7 +22,6 @@ const SignUp = () => {
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const usernamefromredux = useSelector((state) => state.user.username);
   const [isLogin, setIsLogin] = useState(true);
 
   // ✅ Modal states
@@ -109,7 +108,7 @@ const SignUp = () => {
 
     axios
       .post(`${import.meta.env.VITE_BACKEND_URL}/api/sign-up`, formData)
-      .then((res) => {
+      .then(() => {
         dispatch(setReduxUsername(formData.username));
         setMessage("Account created successfully! Click login to continue.");
         setModalType("success");

@@ -1,25 +1,42 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import img from "../images/code.png";
 import deleteImg from "../images/delete.png";
+import { useNavigate } from "react-router-dom";
 
-const ListCard = () => {
+const ListCard = ({ codeDetails, handleDelete }) => {
   const [isDeleteModelShow, setIsDeleteModelShow] = useState(false);
+  const navigate = useNavigate();
+
+  const updatedAtDate = new Date(codeDetails.updatedAt).toLocaleDateString(
+    "en-GB"
+  );
+  const updatedAtTime = new Date(codeDetails.updatedAt).toLocaleTimeString(
+    "en-GB"
+  );
 
   return (
-    <div className="listCard mb-2 w-full flex items-center justify-between p-[10px] bg-[#141414] cursor-pointer rounded-lg hover:bg-[#202020]">
+    <div
+      className="listCard mb-2 flex w-full cursor-pointer items-center justify-between rounded-lg bg-[#141414] p-[10px] hover:bg-[#202020]"
+      onClick={() => navigate(`/editor/${codeDetails.code_id}`)}
+    >
       <div className="flex items-center gap-2">
-        <img className="w-[80px]" src={img} alt="Project Thumbnail" />
+        <img className="w-[80px]" src={img} alt="Project thumbnail" />
         <div>
-          <h3 className="text-[20px] text-white">My First Project</h3>
-          <p className="text-[gray] text-[14px]">This is my first project</p>
+          <h3 className="text-[20px] text-white">{codeDetails.code_title}</h3>
+          <p className="text-[14px] text-[gray]">
+            Last updated on {updatedAtDate} at {updatedAtTime}
+          </p>
         </div>
       </div>
       <div>
         <img
-          onClick={() => setIsDeleteModelShow(true)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setIsDeleteModelShow(true);
+          }}
           className="w-[30px] cursor-pointer m-4"
           src={deleteImg}
-          alt="Delete Icon"
+          alt="Delete project"
         />
       </div>
 
@@ -34,7 +51,7 @@ const ListCard = () => {
               <button
                 className="p-[10px] rounded-lg bg-[#FF4343] text-white cursor-pointer min-w-[49%]"
                 onClick={() => {
-                  console.log("Project Deleted");
+                  handleDelete(codeDetails.code_id);
                   setIsDeleteModelShow(false);
                 }}
               >
