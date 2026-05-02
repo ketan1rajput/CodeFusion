@@ -585,22 +585,27 @@ const FrontendPracticeWorkspace = () => {
         </aside>
 
         <section className="overflow-hidden rounded-[28px] border border-white/10 bg-[#0b1120]">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-5 py-4">
-            <div className="flex flex-wrap gap-2">
-              {FILE_TABS.map((file) => (
-                <button
-                  key={file.key}
-                  type="button"
-                  onClick={() => setActiveFile(file.key)}
-                  className={`rounded-full px-4 py-2 text-sm transition ${
-                    activeFile === file.key
-                      ? "bg-cyan-400 text-slate-950"
-                      : "border border-white/10 bg-white/5 text-slate-300 hover:border-cyan-300/30 hover:text-white"
-                  }`}
+<div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-5 py-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                File
+              </span>
+              <div className="relative">
+                <select
+                  value={activeFile}
+                  onChange={(e) => setActiveFile(e.target.value)}
+                  className="appearance-none rounded-xl border border-white/10 bg-white/5 px-4 py-2 pr-10 text-sm text-white transition hover:border-cyan-300/30 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
                 >
-                  {file.label}
-                </button>
-              ))}
+                  {FILE_TABS.map((file) => (
+                    <option key={file.key} value={file.key} className="bg-[#141414]">
+                      {file.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex h-2 w-2 items-center justify-center">
+                  <div className="h-0 w-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-slate-400" />
+                </div>
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">

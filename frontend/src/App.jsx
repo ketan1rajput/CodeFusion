@@ -9,6 +9,7 @@ import SignUp from "./pages/SignUp";
 import Editor from "./pages/Editor";
 import FrontendPracticeWorkspace from "./pages/FrontendPracticeWorkspace";
 import About from "./components/About";
+import AdminPanel from "./pages/AdminPanel";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="practice" element={<PracticeList />} />
         <Route path="practice/:id" element={<FrontendPracticeWorkspace />} />
         <Route path="about" element={<About />} />
+        <Route path="admin-panel" element={<AdminPanel />} />
       </Route>
 
       {/* Route without Navbar */}

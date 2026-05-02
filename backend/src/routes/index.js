@@ -25,6 +25,7 @@ const {
 } = require("../validators/validator");
 const FrontendPracticeSolution = require("../../models/FrontendPracticeSolution");
 const frontendQuestionRoutes = require("./questions");
+const adminRoutes = require("./admin");
 
 const app = express();
 const router = express.Router();
@@ -276,6 +277,7 @@ router.get("/search", async (req, res) => {
 });
 
 app.use("/api/frontend-questions", frontendQuestionRoutes);
+app.use("/api/admin", adminRoutes);
 
 // ✅ ZIP download route using router
 

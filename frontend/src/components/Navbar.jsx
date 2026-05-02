@@ -70,6 +70,9 @@ const Navbar = () => {
           <NavLink to="/about" className={navLinkClass}>
             About
           </NavLink>
+          <NavLink to="/admin-panel" className={navLinkClass}>
+            Admin Panel
+          </NavLink>
         </nav>
 
         <div className="relative" ref={dropdownRef}>

@@ -43,10 +43,12 @@ async function loginMiddleware(req, res, next) {
       {
         id: existingUser.id,
         username: existingUser.username,
+        isAdmin: existingUser.isAdmin
       },
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
+    console.log("SIGN SECRET in login middleware ------:", process.env.SECRET_KEY);
 
     res.cookie("token", token, buildCookieOptions());
 
