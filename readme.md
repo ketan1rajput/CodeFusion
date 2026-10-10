@@ -46,57 +46,43 @@
 - **Search (debouncing)**: 
   - Users can search for code by entering titile of code, debouncing method is used for optimized search
 
-## 🚀 Getting Started
-
-To run the project locally, follow these steps:
+## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or later)
-- PostgreSQL
-- NPM (Node Package Manager)
+- Node.js and npm
+- A PostgreSQL database. You can use your Neon database; its connection URL should include `sslmode=require`.
 
-### Installation
+### Configure the environment
 
-1. **Clone the repository**:
-    ```bash
-    git clone https://github.com/your-username/codefusion.git
-    cd codefusion
-    ```
+1. In `backend`, copy `.env.example` to `.env` and fill in your Neon `DATABASE_URL` and a strong `SECRET_KEY`. For local development, keep `NODE_ENV=development`, `PORT=3000`, and `CORS_ORIGIN=http://localhost:5173`.
+2. In `frontend`, create `.env` with `VITE_BACKEND_URL=http://localhost:3000`.
+3. Environment files contain credentials and are ignored by git. Do not commit them. If you use your deployed Neon database locally, local changes will affect that same database; use a separate Neon branch/database for development when possible.
 
-2. **Install dependencies**:
-    For both frontend and backend, run the following commands:
-    
-    **Frontend**:
-    ```bash
-    cd frontend
-    npm install
-    ```
+### Install and run
 
-    **Backend**:
-    ```bash
-    cd backend
-    npm install
-    ```
+Install dependencies once in each project:
 
-3. **Configure the Database**:
-   - Make sure PostgreSQL is installed and running on your system.
-   - Create a new PostgreSQL database for the project.
-   - Configure the database connection in `backend/config/database.js` with your PostgreSQL credentials.
+```powershell
+cd backend
+npm install
+cd ..\frontend
+npm install
+```
 
-4. **Run the Backend**:
-    ```bash
-    cd backend
-    npm run start
-    ```
+Open two terminals from the project directory:
 
-5. **Run the Frontend**:
-    ```bash
-    cd frontend
-    npm run start
-    ```
+```powershell
+cd backend
+npm run dev
+```
 
-    The app should now be running at `http://localhost:3000`.
+```powershell
+cd frontend
+npm run dev
+```
+
+Open the Vite URL shown in the frontend terminal (normally `http://localhost:5173`). The API runs at `http://localhost:3000`. Restart the frontend after changing its `.env` file.
 
 ## 🔐 Authentication
 

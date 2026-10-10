@@ -6,8 +6,6 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-console.log("this is env", process.env.DATABASE_URL);
-
 pool
   .connect()
   .then(() => console.log("Connected to PostgreSQL"))

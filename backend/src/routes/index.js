@@ -26,12 +26,14 @@ const {
 const FrontendPracticeSolution = require("../../models/FrontendPracticeSolution");
 const frontendQuestionRoutes = require("./questions");
 const adminRoutes = require("./admin");
+const aiRoutes = require("./ai.routes");
 
 const app = express();
 const router = express.Router();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use("/api/ai", aiRoutes);
 
 const PORT = process.env.PORT || 3000;
 const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
