@@ -10,6 +10,7 @@ import Editor from "./pages/Editor";
 import FrontendPracticeWorkspace from "./pages/FrontendPracticeWorkspace";
 import About from "./components/About";
 import AdminPanel from "./pages/AdminPanel";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
           <Route path="home" element={<Home />} />
         <Route path="practice" element={<PracticeList />} />
         <Route path="practice/:id" element={<FrontendPracticeWorkspace />} />
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="about" element={<About />} />
         <Route path="admin-panel" element={<AdminPanel />} />
       </Route>

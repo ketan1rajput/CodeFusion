@@ -5,7 +5,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 import { persistor } from "../utils/appStore";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserId, setUsername } from "../utils/UserSlice";
+import { setIsAdmin, setUserId, setUsername } from "../utils/UserSlice";
 
 const navLinkClass = ({ isActive }) =>
   `rounded-full px-4 py-2 text-sm transition ${
@@ -20,6 +20,29 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const userName = useSelector((state) => state.user.username) || "User";
+  const isAdmin = useSelector((state) => state.user.isAdmin);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_URL}/api/me`, {
+        withCredentials: true,
+      })
+      .then(({ data }) => {
+        if (!isMounted || !data?.user) return;
+        dispatch(setUserId(data.user.id));
+        dispatch(setUsername(data.user.username));
+        dispatch(setIsAdmin(data.user.isAdmin));
+      })
+      .catch(() => {
+        if (isMounted) dispatch(setIsAdmin(false));
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     function handleOutsideClick(event) {
@@ -49,6 +72,7 @@ const Navbar = () => {
       await persistor.flush();
       dispatch(setUserId(null));
       dispatch(setUsername(""));
+      dispatch(setIsAdmin(false));
       navigate("/");
     }
   }
@@ -67,12 +91,17 @@ const Navbar = () => {
           <NavLink to="/practice" className={navLinkClass}>
             Practice
           </NavLink>
+          <NavLink to="/dashboard" className={navLinkClass}>
+            Dashboard
+          </NavLink>
           <NavLink to="/about" className={navLinkClass}>
             About
           </NavLink>
-          <NavLink to="/admin-panel" className={navLinkClass}>
-            Admin Panel
-          </NavLink>
+          {isAdmin && (
+            <NavLink to="/admin-panel" className={navLinkClass}>
+              Admin
+            </NavLink>
+          )}
         </nav>
 
         <div className="relative" ref={dropdownRef}>

@@ -19,6 +19,7 @@ function serializeUser(user) {
     username: user.username,
     name: user.name,
     email: user.email,
+    isAdmin: Boolean(user.isAdmin),
   };
 }
 

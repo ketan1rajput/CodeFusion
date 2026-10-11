@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Code, User } = require("../../models/Assosiations");
 const FrontendQuestion = require("../../models/FrontendQuestion");
 const FrontendPracticeSolution = require("../../models/FrontendPracticeSolution");
+const FrontendPracticeCompletion = require("../../models/FrontendPracticeCompletion");
 
 const DIFFICULTY_TIME_LIMITS = {
   easy: 15,
@@ -304,6 +305,84 @@ async function saveFrontendSolution(solutionDetails) {
   });
 }
 
+async function markFrontendQuestionComplete(questionId, userId) {
+  const question = await FrontendQuestion.findByPk(questionId, {
+    attributes: ["id"],
+  });
+  if (!question) {
+    return null;
+  }
+
+  const [completion, created] = await FrontendPracticeCompletion.findOrCreate({
+    where: { userId, questionId },
+    defaults: { userId, questionId },
+  });
+
+  return { completion, created };
+}
+
+async function getFrontendPracticeProgress(userId) {
+  const [questions, completions] = await Promise.all([
+    FrontendQuestion.findAll({
+      attributes: ["id", "title", "difficulty"],
+    }),
+    FrontendPracticeCompletion.findAll({
+      where: { userId },
+      attributes: ["questionId", "completedAt"],
+      order: [["completedAt", "DESC"]],
+    }),
+  ]);
+
+  const questionsById = new Map(
+    questions.map((question) => [question.id, question])
+  );
+  const completedQuestionIds = new Set(
+    completions
+      .map((completion) => completion.questionId)
+      .filter((questionId) => questionsById.has(questionId))
+  );
+  const difficultyBreakdown = {
+    easy: { solved: 0, total: 0 },
+    medium: { solved: 0, total: 0 },
+    hard: { solved: 0, total: 0 },
+  };
+
+  questions.forEach((question) => {
+    const difficulty = difficultyBreakdown[question.difficulty];
+    if (!difficulty) return;
+
+    difficulty.total += 1;
+    if (completedQuestionIds.has(question.id)) {
+      difficulty.solved += 1;
+    }
+  });
+
+  const solvedCount = completedQuestionIds.size;
+  const totalQuestions = questions.length;
+
+  return {
+    solvedCount,
+    totalQuestions,
+    remainingCount: Math.max(totalQuestions - solvedCount, 0),
+    completionRate: totalQuestions
+      ? Math.round((solvedCount / totalQuestions) * 100)
+      : 0,
+    difficultyBreakdown,
+    recentCompletions: completions
+      .filter((completion) => questionsById.has(completion.questionId))
+      .slice(0, 5)
+      .map((completion) => {
+        const question = questionsById.get(completion.questionId);
+        return {
+          questionId: question.id,
+          title: question.title,
+          difficulty: question.difficulty,
+          completedAt: completion.completedAt,
+        };
+      }),
+  };
+}
+
 async function fetchCode(id, userId) {
   const codeData = await Code.findOne({
     where: {
@@ -325,4 +404,6 @@ module.exports = {
   getFrontendQuestion,
   listFrontendQuestions,
   saveFrontendSolution,
+  markFrontendQuestionComplete,
+  getFrontendPracticeProgress,
 };

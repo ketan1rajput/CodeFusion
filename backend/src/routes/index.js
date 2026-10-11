@@ -17,23 +17,21 @@ const {
   authenticateToken,
 } = require("../middlewares/authenticateToken");
 const { loginMiddleware } = require("../middlewares/loginMiddleware");
-const { buildCookieOptions } = require("../utils/auth");
+const { buildCookieOptions, serializeUser } = require("../utils/auth");
 const {
   codeSaveSchema,
   loginSchema,
   signUpSchema,
 } = require("../validators/validator");
 const FrontendPracticeSolution = require("../../models/FrontendPracticeSolution");
+const FrontendPracticeCompletion = require("../../models/FrontendPracticeCompletion");
+const User = require("../../models/User");
 const frontendQuestionRoutes = require("./questions");
 const adminRoutes = require("./admin");
 const aiRoutes = require("./ai.routes");
 
 const app = express();
 const router = express.Router();
-
-app.use(express.json());
-app.use(cookieParser());
-app.use("/api/ai", aiRoutes);
 
 const PORT = process.env.PORT || 3000;
 const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
@@ -53,6 +51,10 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(express.json());
+app.use(cookieParser());
+app.use("/api/ai", aiRoutes);
 
 // ✅ All routes go here
 
@@ -119,8 +121,17 @@ router.post("/logout", (req, res) => {
 
 router.use(authenticateToken);
 
-router.get("/me", (req, res) => {
-  return res.status(200).json({ success: true, user: req.user });
+router.get("/me", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+    return res.status(200).json({ success: true, user: serializeUser(user) });
+  } catch (error) {
+    console.error("Unable to load current user", error);
+    return res.status(500).json({ success: false, message: "Unable to load current user." });
+  }
 });
 
 // Show all codes
@@ -293,6 +304,7 @@ app.use("/api", router);
 async function startServer() {
   try {
     await FrontendPracticeSolution.sync();
+    await FrontendPracticeCompletion.sync();
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });

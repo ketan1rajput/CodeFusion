@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import {
   setUsername as setReduxUsername,
   setUserId,
+  setIsAdmin,
 } from "../utils/UserSlice.js";
 import PopupModal from "../components/PopupModal.jsx";
 import { loginSchema, signUpSchema } from "../utils/validationSchema.js";
@@ -81,6 +82,7 @@ const SignUp = () => {
       .then((res) => {
         dispatch(setReduxUsername(res.data.user.username));
         dispatch(setUserId(res.data.user.id));
+        dispatch(setIsAdmin(res.data.user.isAdmin));
         setMessage("Login successful!");
         setModalType("success");
         setIsOpen(true);

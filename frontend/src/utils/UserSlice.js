@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   userId: null,
   username: "",
+  isAdmin: false,
   codeTitle: "",
   codeId: "",
   codeCreatedDate: "",
@@ -18,6 +19,9 @@ const userSlice = createSlice({
     },
     setUsername: (state, action) => {
       return { ...state, username: action.payload };
+    },
+    setIsAdmin: (state, action) => {
+      return { ...state, isAdmin: Boolean(action.payload) };
     },
     setCodeTitle: (state, action) => {
       return { ...state, codeTitle: action.payload };
@@ -38,6 +42,7 @@ const userSlice = createSlice({
 export const {
   setUserId,
   setUsername,
+  setIsAdmin,
   setCodeTitle,
   setCodeId,
   setCodeCreatedDate,

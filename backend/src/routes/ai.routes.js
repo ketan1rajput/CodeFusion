@@ -5,7 +5,16 @@ const {
     generateFrontendCodeResponse,
 } = require("../services/ai.services");
 
-const supportedActions = ["suggest", "optimize", "fix", "explain", "solve"];
+const supportedActions = [
+    "suggest",
+    "optimize",
+    "fix",
+    "debug",
+    "explain",
+    "explainCode",
+    "explainProblem",
+    "hint",
+];
 const supportedLanguages = ["html", "css", "javascript"];
 
 router.post("/generate", async (req, res) => {

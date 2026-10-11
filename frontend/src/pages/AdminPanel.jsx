@@ -1,5 +1,16 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
+
+const EMPTY_QUESTION = {
+  title: "",
+  description: "",
+  difficulty: "easy",
+  starter_html: "",
+  starter_css: "",
+  starter_js: "",
+  test_cases: "[]",
+};
 
 const difficultyClasses = {
   easy: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
@@ -14,23 +25,13 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  
-  // Form states
+  const [isSaving, setIsSaving] = useState(false);
+  const [editingQuestionId, setEditingQuestionId] = useState(null);
+  const currentUserId = useSelector((state) => state.user.userId);
   const [showAddQuestion, setShowAddQuestion] = useState(false);
-  const [newQuestion, setNewQuestion] = useState({
-    title: "",
-    description: "",
-    difficulty: "easy",
-    starter_html: "",
-    starter_css: "",
-    starter_js: "",
-  });
+  const [newQuestion, setNewQuestion] = useState(EMPTY_QUESTION);
 
-  useEffect(() => {
-    fetchData();
-  }, [activeTab]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -39,25 +40,51 @@ const AdminPanel = () => {
           `${import.meta.env.VITE_BACKEND_URL}/api/admin/show-users`,
           { withCredentials: true }
         );
-        setUsers(response.data || []);
+        setUsers(response.data?.data || []);
       } else {
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/admin/get-questions`,
           { withCredentials: true }
         );
-        setQuestions(response.data || []);
+        setQuestions(response.data?.data || []);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load data");
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  function resetQuestionForm() {
+    setNewQuestion(EMPTY_QUESTION);
+    setEditingQuestionId(null);
+    setShowAddQuestion(false);
+  }
+
+  function startEditingQuestion(question) {
+    setNewQuestion({
+      title: question.title || "",
+      description: question.description || "",
+      difficulty: question.difficulty || "easy",
+      starter_html: question.starter_html || "",
+      starter_css: question.starter_css || "",
+      starter_js: question.starter_js || "",
+      test_cases: JSON.stringify(question.test_cases || [], null, 2),
+    });
+    setEditingQuestionId(question.id);
+    setShowAddQuestion(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   const handleDeleteUser = async (userId) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    if (!window.confirm("Delete this user and their saved code and practice submissions?")) return;
     
     try {
+      setError("");
       await axios.delete(
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/delete-user`,
         {
@@ -65,17 +92,18 @@ const AdminPanel = () => {
           withCredentials: true,
         }
       );
-      setSuccess("User deleted successfully");
-      fetchData();
+      await fetchData();
+      setSuccess("User deleted successfully.");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to delete user");
     }
   };
 
   const handleDeleteQuestion = async (questionId) => {
-    if (!window.confirm("Are you sure you want to delete this question?")) return;
+    if (!window.confirm("Delete this question and its saved practice submissions?")) return;
     
     try {
+      setError("");
       await axios.delete(
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/delete-question`,
         {
@@ -83,34 +111,54 @@ const AdminPanel = () => {
           withCredentials: true,
         }
       );
-      setSuccess("Question deleted successfully");
-      fetchData();
+      await fetchData();
+      setSuccess("Question deleted successfully.");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to delete question");
     }
   };
 
-  const handleAddQuestion = async (e) => {
+  const handleSaveQuestion = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
+    let testCases;
+
     try {
-      await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/admin/post-question`,
-        newQuestion,
-        { withCredentials: true }
-      );
-      setSuccess("Question created successfully");
-      setShowAddQuestion(false);
-      setNewQuestion({
-        title: "",
-        description: "",
-        difficulty: "easy",
-        starter_html: "",
-        starter_css: "",
-        starter_js: "",
-      });
-      fetchData();
+      testCases = JSON.parse(newQuestion.test_cases);
+      if (!Array.isArray(testCases)) {
+        throw new Error("Test cases must be a JSON array.");
+      }
+    } catch {
+      setError("Test cases must be valid JSON in an array, such as [].");
+      return;
+    }
+
+    const payload = { ...newQuestion, test_cases: testCases };
+    const isEditing = Boolean(editingQuestionId);
+
+    try {
+      setIsSaving(true);
+      if (isEditing) {
+        await axios.put(
+          `${import.meta.env.VITE_BACKEND_URL}/api/admin/update-question`,
+          { ...payload, id: editingQuestionId },
+          { withCredentials: true }
+        );
+      } else {
+        await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/admin/post-question`,
+          payload,
+          { withCredentials: true }
+        );
+      }
+      resetQuestionForm();
+      await fetchData();
+      setSuccess(isEditing ? "Question updated successfully." : "Question created successfully.");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to create question");
+      setError(err.response?.data?.message || "Unable to save question.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -225,9 +273,11 @@ const AdminPanel = () => {
                           <td className="py-4 text-right">
                             <button
                               onClick={() => handleDeleteUser(user.id)}
+                              disabled={Number(user.id) === Number(currentUserId)}
+                              title={Number(user.id) === Number(currentUserId) ? "You cannot delete your own account" : "Delete user"}
                               className="rounded-lg border border-rose-400/30 bg-rose-400/10 px-4 py-2 text-sm text-rose-200 transition hover:bg-rose-400/20"
                             >
-                              Delete
+                              {Number(user.id) === Number(currentUserId) ? "Current admin" : "Delete"}
                             </button>
                           </td>
                         </tr>
@@ -245,7 +295,15 @@ const AdminPanel = () => {
           <div>
             <div className="mb-6 flex justify-end">
               <button
-                onClick={() => setShowAddQuestion(!showAddQuestion)}
+                onClick={() => {
+                  if (showAddQuestion) {
+                    resetQuestionForm();
+                  } else {
+                    setNewQuestion(EMPTY_QUESTION);
+                    setEditingQuestionId(null);
+                    setShowAddQuestion(true);
+                  }
+                }}
                 className="rounded-xl bg-cyan-400 px-6 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
               >
                 {showAddQuestion ? "Cancel" : "Add Question"}
@@ -255,10 +313,10 @@ const AdminPanel = () => {
             {/* Add Question Form */}
             {showAddQuestion && (
               <div className="mb-8 rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.95),rgba(8,17,32,0.92))] p-6">
-                <h2 className="mb-6 text-xl font-semibold text-slate-50">
-                  Create New Question
+                  <h2 className="mb-6 text-xl font-semibold text-slate-50">
+                  {editingQuestionId ? "Edit Question" : "Create New Question"}
                 </h2>
-                <form onSubmit={handleAddQuestion} className="space-y-6">
+                <form onSubmit={handleSaveQuestion} className="space-y-6">
                   <div className="grid gap-6 md:grid-cols-2">
                     <div>
                       <label className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-400">
@@ -369,11 +427,35 @@ const AdminPanel = () => {
                     </div>
                   </div>
 
+                  <div>
+                    <label className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-400">
+                      Test Cases (JSON array)
+                    </label>
+                    <textarea
+                      value={newQuestion.test_cases}
+                      onChange={(e) =>
+                        setNewQuestion({
+                          ...newQuestion,
+                          test_cases: e.target.value,
+                        })
+                      }
+                      required
+                      rows={6}
+                      spellCheck="false"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 font-mono text-sm text-white transition hover:border-cyan-300/30 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400/50"
+                      placeholder={'[{"selector":"#app","mustExist":true}]'}
+                    />
+                    <p className="mt-2 text-xs text-slate-400">
+                      Use the same selector and interaction format as the practice test runner.
+                    </p>
+                  </div>
+
                   <button
                     type="submit"
+                    disabled={isSaving}
                     className="rounded-xl bg-cyan-400 px-6 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
                   >
-                    Create Question
+                    {isSaving ? "Saving..." : editingQuestionId ? "Save Changes" : "Create Question"}
                   </button>
                 </form>
               </div>
@@ -432,6 +514,13 @@ const AdminPanel = () => {
                                 : "N/A"}
                             </td>
                             <td className="py-4 text-right">
+                              <button
+                                type="button"
+                                onClick={() => startEditingQuestion(question)}
+                                className="mr-2 rounded-lg border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100 transition hover:bg-cyan-300/20"
+                              >
+                                Edit
+                              </button>
                               <button
                                 onClick={() => handleDeleteQuestion(question.id)}
                                 className="rounded-lg border border-rose-400/30 bg-rose-400/10 px-4 py-2 text-sm text-rose-200 transition hover:bg-rose-400/20"

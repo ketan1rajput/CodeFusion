@@ -5,6 +5,8 @@ const {
   getFrontendQuestion,
   listFrontendQuestions,
   saveFrontendSolution,
+  markFrontendQuestionComplete,
+  getFrontendPracticeProgress,
 } = require("../controllers/CodeController");
 const { authenticateToken } = require("../middlewares/authenticateToken");
 
@@ -18,6 +20,19 @@ router.get("/", async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/progress", authenticateToken, async (req, res) => {
+  try {
+    const progress = await getFrontendPracticeProgress(req.user.id);
+    return res.status(200).json({ success: true, data: progress });
+  } catch (error) {
+    console.error("Unable to load practice progress", error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load practice progress.",
+    });
   }
 });
 
@@ -71,6 +86,38 @@ router.post("/:id/solutions", authenticateToken, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.post("/:id/completions", authenticateToken, async (req, res) => {
+  try {
+    const result = await markFrontendQuestionComplete(
+      req.params.id,
+      req.user.id
+    );
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Question not found.",
+      });
+    }
+
+    return res.status(result.created ? 201 : 200).json({
+      success: true,
+      message: result.created
+        ? "Question completion recorded."
+        : "Question was already completed.",
+      data: { questionId: result.completion.questionId },
+    });
+  } catch (error) {
+    console.error("Unable to record practice completion", error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to record practice completion.",
+      ...(process.env.NODE_ENV !== "production"
+        ? { details: error.message }
+        : {}),
+    });
   }
 });
 
